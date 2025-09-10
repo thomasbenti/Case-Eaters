@@ -1,0 +1,106 @@
+\documentclass[12pt]{article}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+% Page setup
+\geometry{letterpaper, margin=1in}
+\setlist[enumerate,1]{label=\arabic*.}
+\setlist[enumerate,2]{label*=\arabic*.}
+
+\title{Software Requirements Specification\\
+for\\
+Cafeteria Ordering System (COS)}
+\author{Prepared by: Thomas Bentivoglio, Angel Diaz, Dominic Roberts, Kathryn Borkowski, Sophia Kager}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+% --- Revision History Section ---
+\section*{Revision History}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Name} & \textbf{Date} & \textbf{Reason For Changes} & \textbf{Version} \\ \hline
+Karl Wiegers  & 10/21/02      & initial draft               & 1.0 draft 1      \\ \hline
+Karl Wiegers  & 11/4/02       & baseline following changes after inspection & 1.0 approved \\ \hline
+\end{tabular}
+\end{table}
+\newpage
+
+\section{Introduction}
+\subsection{Purpose}
+This SRS document describes the software functional and non-functional requirements for the release of Case Eaters web app system.
+\subsection{Project Scope and Product Features}
+\subsection{References}
+
+\section{Overall Description}
+\subsection{Product Perspective}
+A platform for users to report and locate free food. Users can input locations and food types. These can be accessed via both a list of posts or as pins on a live map. Posts have interactive features, and map locations will be linked to the posts. The food can be filtered by location and type to help users connect with their most desired, closest free food available. Additionally, the app can connect college student users who have extra meal swipes with those who do not, maximizing meal plan value. Users are incentivized to participate with a loyalty system.
+\subsection{User Classes and Characteristics}
+
+The system shall provide the following user interfaces:
+
+\begin{itemize}
+    \item \textbf{Login}  
+    Login screen to secure user data.
+
+    \item \textbf{Map}  
+    Displays a campus map including pins at food locations.  
+    Includes navigation buttons to access the profile page or user entry pages.
+
+    \item \textbf{List of Food}  
+    A list representation of the map where users can sort available food based on distance and type.
+
+    \item \textbf{User Entry Page 1}  
+    Prompts the user to select the type of event (Free Food or Meal Swipe).
+
+    \item \textbf{User Entry -- Free Food Event}  
+    Provides a dropdown menu of campus locations with free food,  
+    or allows the user to drop a pin at their current location.  
+    Includes a text box for event description.
+
+    \item \textbf{User Entry -- Meal Swipe Available}  
+    Allows the user to specify the type of meal swipe available (in person or via Case Meal Swipe app).
+
+    \item \textbf{Profile Page -- Food Preferences}  
+    Displays and manages the user’s food preferences.
+
+    \item \textbf{Notification System}  
+    \begin{itemize}
+        \item Notify users when food is made available near them.  
+        \item Notify users when their favorite foods are available.  
+    \end{itemize}
+\end{itemize}
+\subsection{Operating Environment}
+\subsection{Design and Implementation Constraints}
+\subsection{User Documentation}
+\subsection{Assumptions and Dependencies}
+
+\section{System Features}
+\subsection{Post Locations}
+\subsection{Auction Meal Swipes}
+\subsection{----}
+\subsection{-----}
+\subsection{-----}
+
+\section{External Interface Requirements}
+\subsection{User Interfaces}
+\subsection{Hardware Interfaces}
+\subsection{Software Interfaces}
+\subsection{Communications Interfaces}
+
+\section{Other Nonfunctional Requirements}
+\subsection{Performance Requirements}
+\subsection{Safety Requirements}
+\subsection{Security Requirements}
+\subsection{Software Quality Attributes}
+
+\appendix
+\section{Data Dictionary and Data Model}
+\section{Analysis Models}
+
+\end{document}
