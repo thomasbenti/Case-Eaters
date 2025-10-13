@@ -1,0 +1,96 @@
+/* FoodMap.css */
+
+.food-map-page {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 60px);
+  width: 183vh;
+  margin: 0;
+  padding: 0;
+  background-color: 1e1e1e;
+  overflow: hidden;
+}
+
+/* Map section */
+.map-container {
+  flex: 2;
+  height: 100%;
+}
+
+/* List section */
+.food-list-container {
+  flex: 1;
+  max-width: 400px;
+  min-width: 280px;
+  height: 100%;
+  border-left: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+.food-list-container h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  color: #1a73e8;
+}
+
+/* Food list styling */
+.food-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.food-list li {
+  padding: 10px 8px;
+  margin-bottom: 6px;
+  background-color: #031437;
+  border: 1px solid #031437;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.food-list li:hover {
+  background-color: #2d3c51;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.food-list li strong {
+  display: block;
+  color: #1a73e8;
+  font-size: 1rem;
+}
+
+.food-list li p {
+  margin: 4px 0;
+  color: #ffffff;
+}
+
+.food-list li span {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .food-map-page {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .map-container {
+    flex: none;
+    height: 300px;
+  }
+
+  .food-list-container {
+    flex: none;
+    height: auto;
+    border-left: none;
+    border-top: 1px solid #ccc;
+  }
+}

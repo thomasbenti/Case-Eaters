@@ -1,0 +1,109 @@
+/* Swipes.css */
+
+.swipes-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 5%;
+  min-height: calc(100vh - 64px);
+  background-color: #1e1e1e;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+}
+
+/* Header */
+.swipes-header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.swipes-header h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.swipes-header p {
+  color: #ccc;
+  margin-top: 8px;
+}
+
+/* Filter bar */
+.swipes-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.swipes-filters input,
+.swipes-filters select {
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+.swipes-filters input:focus,
+.swipes-filters select:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
+
+/* Swipe cards grid */
+.swipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Swipe card styling */
+.swipe-card {
+  background-color: #2a2a2a;
+  border-radius: 10px;
+  padding: 16px 18px;
+  border: 1px solid #3a3a3a;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.swipe-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.swipe-card h3 {
+  color: #1a73e8;
+  margin-bottom: 6px;
+  font-size: 1.1rem;
+}
+
+.swipe-card p {
+  color: #ccc;
+  margin: 4px 0;
+  font-size: 0.95rem;
+}
+
+.swipe-card small {
+  display: block;
+  margin-top: 8px;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .swipes-page {
+    padding: 20px;
+  }
+
+  .swipes-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,9 +1,9 @@
 # SOFTWARE-ENGINEERING-PROJECT
 
-#-----DESCRIPTION-----#
+## DESCRIPTIOIN
 
-#-----FEAURES-----#
+## FEAURES
 
-#-----INSTALATION-----#
+## INSTALATION
 
 '''bash

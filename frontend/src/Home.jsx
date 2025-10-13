@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import "./Home.css";
+import campusImage from "/CWRU-Campus.png";
 
 const LoginCard = [
   {
@@ -10,7 +10,7 @@ const LoginCard = [
   },
   {
     title: "Create Account",
-    link: "/register",
+    link: "/Register",
     description: "Sign up to start sharing and finding free food on campus.",
   },
 ];
@@ -19,17 +19,19 @@ class Home extends Component {
   render() {
     return (
       <div className="home-page">
+        <div className="hero-image">
+          <img src={campusImage} alt="Case Western Reserve University campus" />
+        </div>
+
         <h1>Case Eaters</h1>
         <p>Find or share free food and meal swipes on campus.</p>
 
-        <div className="login-cards">
+        <div className="research-cards">
           {LoginCard.map((item, index) => (
             <div key={index} className="login-card">
-              <h3>{item.title}</h3>
+              <p>{item.title}</p>
               <p>{item.description}</p>
-              <Link to={item.link} className="btn">
-                {item.title}
-              </Link>
+              <a href={item.link}>Go</a>
             </div>
           ))}
         </div>
