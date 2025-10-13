@@ -2,29 +2,55 @@ const express = require('express');
 const router = express.Router();
 const { Post, User } = require('../models');
 
+// Gets all posts
 router.get('/', async (req, res) => {
-    const listOdPosts = await User.findAll();
-    res.json(listOfUsers);
-});
-
-router.get('/byId/:id', async (req, res) => {
-    const id = req.params.id;
-    const user = await User.findByPk(id, {
-        include: [{ model: Post, as: 'posts' }],
+    try{
+        const listOfPosts = await Post.findAll({
+            include: [{model: User, as: 'user', attributes: ['firstName', 'lastName', 'email']}]
     });
-    if (user) {
-        res.json(user);
-    } else {
-        res.status(404).json({ error: 'User not found' });
+    res.json(listOfPosts);
+    } catch (err){
+        res.status(500).json({error: err.message});
     }
 });
 
+// Get posts by a user
+router.get('/byUser/:userId', async (req, res) => {
+    const id = req.params.userId;
+    try{
+        const user = await User.findByPk(id, {
+        include: [{ model: Post, as: 'posts' }],
+    });
+    if (!user) {
+        return res.status(404).json({error: 'User not found'});
+    }
+    res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Creates a new post
 router.post('/create', async (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
+    
     try {
-        const newUser = await User.create({ firstName, lastName, email, password });
-        res.status(201).json(newUser);
-    } catch (error) {
+        if(!req.user){
+            return res.status(401).json({error: 'Unauthorized'});
+        }
+        const { title, description, location, time, experationTime, repOrSwipe } = req.body;
+        const newPost = await Post.create({
+            title,
+            description,
+            location,
+            time,
+            experationTime,
+            repOrSwipe,
+            reporter: req.user.accountId,
+        });
+        res.status(201).json(newPost);
+    } catch (err) {
         res.status(400).json({ error: error.message });
     }
 });
+
+module.exports = router;
