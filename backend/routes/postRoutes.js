@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Post, User } = require('../models');
+const authMiddleware = require('../middleware/authMiddleware');
 
 // Gets all posts
 router.get('/', async (req, res) => {
@@ -31,7 +32,7 @@ router.get('/byUser/:userId', async (req, res) => {
 });
 
 // Creates a new post
-router.post('/create', async (req, res) => {
+router.post('/create', authMiddleware, async (req, res) => {
     
     try {
         if(!req.user){
@@ -45,7 +46,7 @@ router.post('/create', async (req, res) => {
             time,
             experationTime,
             repOrSwipe,
-            reporter: req.user.accountId,
+            reporter: req.user.id,
         });
         res.status(201).json(newPost);
     } catch (err) {

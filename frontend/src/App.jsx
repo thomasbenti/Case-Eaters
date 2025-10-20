@@ -4,6 +4,7 @@ import Home from "./Home";
 import FoodMap from "./FoodMap";
 import Swipes from "./Swipes";
 import "./App.css";
+import CreatePostForm from "./CreatePostForm";
 
 class App extends Component {
   render() {
@@ -16,8 +17,10 @@ class App extends Component {
           <Route path="/" element={<Home />} />
           <Route path="/map" element={<FoodMap />} />
           <Route path="/Swipes" element={<Swipes />} />
+          <Route path="/create-post" element={<CreatePostForm />} />
         </Routes>
       </Router>
+      
     );
   }
 }
