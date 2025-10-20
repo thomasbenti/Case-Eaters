@@ -11,8 +11,9 @@ class App extends Component {
     return (
       <Router>
         <div className="Navbar">
-          <Link to="/">Home</Link> | <Link to="/map">Food Map</Link> | <Link to="/Swipes">Swipes</Link>
+          <Link to="/">Home</Link> | <Link to="/map">Food Map</Link> | <Link to="/Swipes">Swipes</Link> | <Link to="/create-post">Create Post</Link>
         </div>
+      
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/map" element={<FoodMap />} />
