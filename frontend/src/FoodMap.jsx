@@ -4,40 +4,46 @@ import "./FoodMap.css";
 
 const center = { lat: 41.5045, lng: -81.6086 }; // CWRU campus center
 
-const dummyReports = [
-  {
-    id: 1,
-    type: "Pizza",
-    location: "KSL Library",
-    description: "Free leftover pizza available on the first floor.",
-    time: "2:00 PM",
-    position: { lat: 41.507, lng: -81.609 },
-  },
-  {
-    id: 2,
-    type: "Sandwiches",
-    location: "Tinkham Veale",
-    description: "Club event sandwiches open to all students.",
-    time: "12:30 PM",
-    position: { lat: 41.5052, lng: -81.6075 },
-  },
-  {
-    id: 3,
-    type: "Coffee & Donuts",
-    location: "Nord Hall",
-    description: "Morning event hosted by IEEE student branch.",
-    time: "9:00 AM",
-    position: { lat: 41.5048, lng: -81.6095 },
-  },
-];
-
 class FoodMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      reports: [],    
       selected: null,
     };
   }
+
+  componentDidMount() {
+    this.loadReports();
+  }
+
+  loadReports = async () => {
+    try {
+      const res = await fetch("http://localhost:3001/posts");
+      const data = await res.json();
+      const reportsWithPositions = data.map(post => ({
+        id: post.postId,
+        type: post.title,
+        location: post.location,
+        description: post.description,
+        time: new Date(post.time).toLocaleTimeString(),
+        position: this.getLatLng(post.location), 
+      }));
+      this.setState({ reports: reportsWithPositions });
+    } catch (err) {
+      console.error("Failed to load posts:", err);
+    }
+  };
+
+  getLatLng = (building) => {
+    const map = {
+      "KSL Library": { lat: 41.5049, lng: -81.6078 },
+      "Tinkham Veale": { lat: 41.5052, lng: -81.6075 },
+      "Nord Hall": { lat: 41.5048, lng: -81.6095 },
+    };
+    return map[building] || { lat: 41.5045, lng: -81.6086 }; 
+  };
+
 
   selectReport = (report) => {
     this.setState({ selected: report });
@@ -60,7 +66,7 @@ class FoodMap extends Component {
               center={center}
               zoom={15}
             >
-              {dummyReports.map((report) => (
+              {this.state.reports.map((report) => (
                 <Marker
                   key={report.id}
                   position={report.position}
@@ -89,13 +95,13 @@ class FoodMap extends Component {
         <div className="food-list-container">
           <h3>Available Food</h3>
           <ul className="food-list">
-            {dummyReports.map((report) => (
-              <li key={report.id} onClick={() => this.selectReport(report)}>
-                <strong>{report.type}</strong> — {report.location}
-                <p>{report.description}</p>
-                <span>{report.time}</span>
-              </li>
-            ))}
+          {this.state.reports.map((report) => (
+            <li key={report.id} onClick={() => this.selectReport(report)}>
+              <strong>{report.type}</strong> — {report.location}
+              <p>{report.description}</p>
+              <span>{report.time}</span>
+            </li>
+          ))}
           </ul>
         </div>
       </div>
