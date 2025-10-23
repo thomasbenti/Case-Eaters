@@ -1,10 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import bcrypt from 'bcrypt';
 
-const express = require('express')
 const app = express()
-const bcrypt = require('bcrypt')
 
 app.use(express.json())
 dotenv.config();
@@ -50,5 +49,5 @@ app.listen(3000)
 
 app.get("/", (req, res) => res.send("API running"));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server on port ${PORT}`));
