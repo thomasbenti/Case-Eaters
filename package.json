@@ -4,6 +4,26 @@
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "jest": "^30.2.0",
     "nodemon": "^3.1.10"
-  }
+  },
+  "name": "case-eaters",
+  "version": "1.0.0",
+  "description": "'''bash",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --detectOpenHandles --coverage",
+    "test:watch": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomasbenti/Case-Eaters.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thomasbenti/Case-Eaters/issues"
+  },
+  "homepage": "https://github.com/thomasbenti/Case-Eaters#readme"
 }

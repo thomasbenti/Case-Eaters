@@ -7,4 +7,4 @@ describe('User Model', () => {
     expect(err.errors).toHaveProperty('username');
     expect(err.errors).toHaveProperty('password');
   });
-});
+});  
