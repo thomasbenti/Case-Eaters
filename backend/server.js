@@ -1,8 +1,14 @@
+import express from "express";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+
 const express = require('express')
 const app = express()
 const bcrypt = require('bcrypt')
 
 app.use(express.json())
+dotenv.config();
+connectDB();
 
 const users = []
 
@@ -41,16 +47,6 @@ app.post('/users/login', async (req, res) => {
 app.listen(3000)
 
 //Benti Below
-
-import express from "express";
-import dotenv from "dotenv";
-import connectDB from "./config/db.js";
-
-dotenv.config();
-connectDB();
-
-const app = express();
-app.use(express.json());
 
 app.get("/", (req, res) => res.send("API running"));
 
