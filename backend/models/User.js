@@ -19,17 +19,7 @@ const userSchema = new mongoose.Schema({
     type: String, 
     required: true, 
     unique: true,
-<<<<<<< HEAD
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email address']
-=======
-    validate: {
-    validator: function (value) {
-      // Basic regex email validation
-      return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value);
-    },
-    message: (props) => `${props.value} is not a valid email address`
-   }, 
->>>>>>> origin/SAD
   },
   password: { type: String, required: true },
   mealPlan: { type: Boolean, default: false },
