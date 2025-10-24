@@ -94,3 +94,68 @@
     border-top: 1px solid #ccc;
   }
 }
+
+/* Make Post Section */
+.make-post-container {
+  padding: 16px;
+  margin-top: 20px;
+  background-color: #f0f7ff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(26, 115, 232, 0.15);
+}
+
+.make-post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+}
+
+.make-post-form input,
+.make-post-form textarea,
+.make-post-form select {
+  padding: 10px 12px;
+  border: 1px solid #1a73e8;
+  border-radius: 6px;
+  width: 100%;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: inherit;
+}
+
+.make-post-form input:hover,
+.make-post-form textarea:hover,
+.make-post-form select:hover,
+.make-post-form input:focus,
+.make-post-form textarea:focus,
+.make-post-form select:focus {
+  border-color: #155ab6;
+  box-shadow: 0 0 6px rgba(21, 90, 182, 0.5);
+  outline: none;
+}
+
+.make-post-form button {
+  background-color: #1a73e8;
+  color: #ffffff;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-family: inherit;
+}
+
+.make-post-form button:hover {
+  background-color: #155ab6;
+}
+
+.make-post-form button:active {
+  background-color: #0f3f7a;
+}
+
+@media (max-width: 768px) {
+  .make-post-form {
+    max-width: 100%;
+  }
+}
