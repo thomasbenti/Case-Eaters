@@ -19,10 +19,7 @@ const userSchema = new mongoose.Schema({
     type: String, 
     required: true, 
     unique: true,
-    validate: {
-        isEmail: true,
-        message: (props) => `${props.value} is not a valid email`
-    }, 
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email address']
   },
   password: { type: String, required: true },
   mealPlan: { type: Boolean, default: false },
