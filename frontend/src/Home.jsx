@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./Home.css";
 import campusImage from "/CWRU-Campus.png";
-
+//
 const LoginCard = [
   {
     title: "Login",
