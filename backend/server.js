@@ -1,53 +1,103 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
-import bcrypt from 'bcrypt';
+import User from "./models/User.js";
+//import bcrypt from 'bcrypt';
 
+dotenv.config();
 const app = express()
 
 app.use(express.json())
-dotenv.config();
 connectDB();
 
 const users = []
 
-app.get('/users', (req, res) => {
-  res.json(users)
+//Root route?
+app.get("/", (req, res) => {
+    res.send("API is running :)");
 })
 
+//get all users
+app.get('/users', async(req, res) => {
+    try {
+        const users = await User.find().select('-password');
+        res.json(users)
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+})
+
+//register user
 app.post('/users', async (req, res) => {
     try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10)
-        console.log(hashedPassword)
-        const user = {username: req.body.username, password: hashedPassword}
-        users.push(user)
-        res.status(201).send()
-    } catch {
-        res.status(500).send()
-    }
-})
+        const { username, email, firstName, lastName, password } = req.body;
+        const userExists = await User.findOne({ email });
 
-app.post('/users/login', async (req, res) => {
-    const user = users.find(user => user.username === req.body.username)
-    if (user == null) {
-        return res.status(400).send('Cannot find user')
-    }
-    try {
-        if(await bcrypt.compare(req.body.password, user.password)) {
-            res.send('Success')
-        } else {
-            res.send('Not Allowed')
+        if (userExists) {
+            return res.status(400).json({ message: 'User already exists' });
         }
-    } catch {
-        res.status(500).send()
+
+        const lastUser = await User.findOne().sort({ userId: -1 });
+        const newUserId = lastUser ? lastUser.userId + 1 : 1;
+
+        const user = await User.create({
+            userId: newUserId,
+            firstName: firstName,
+            lastName: lastName,
+            username: username,
+            email: email,
+            password: password
+        });
+
+        res.status(201).json({
+            message: 'User registered successfully',
+            user: {
+                userId: user.userId,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message});
     }
 })
 
-app.listen(3000)
+//user login
+app.post('/users/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({email});
+        if (user == null) {
+            return res.status(400).send('Cannot find user')
+        }
 
-//Benti Below
+        const isMatch = await user.matchPassword(password);
+        if (isMatch) {
+            res.json({
+                message: 'Login successful',
+                user: {
+                    userId: user.userId,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    mealPlan: user.mealPlan,
+                    receivesNotifications: user.receivesNotifications,
+                    isActive: user.isActive
 
-app.get("/", (req, res) => res.send("API running"));
+                }
+            });
+        } else {
+            res.status(400).json({message: 'Invalid credentials'});
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server on port ${PORT}`));
