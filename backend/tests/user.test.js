@@ -5,7 +5,7 @@ import User from "../models/User.js"; // adjust path if needed
 describe("User Model", () => {
   beforeAll(async () => {
     // Connect to in-memory MongoDB or test database
-    await mongoose.connect("mongodb://127.0.0.1:27017/test_db", {
+    await mongoose.connect("mongodb+srv://tlb102_db_user:N03knbMPVXMbM28F@case-eaters-cluster.nmzvrlw.mongodb.net/?retryWrites=true&w=majority&appName=Case-Eaters-Cluster", {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
