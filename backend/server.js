@@ -1,30 +1,103 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
+import express from "express";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import User from "./models/User.js";
+//import bcrypt from 'bcrypt';
 
-const app = express();
-const PORT = 3001;
+dotenv.config();
+const app = express()
 
-// frontend
-app.use(cors({ origin: "http://localhost:5177" })); 
-app.use(bodyParser.json());
+app.use(express.json())
+connectDB();
 
-// dummy posts
-let posts = [];
+const users = []
 
-// POST route
-app.post("/posts/create", (req, res) => {
-  const post = { ...req.body, postId: posts.length + 1 };
-  posts.push(post);
-  res.status(201).json(post);
+//Root route?
+app.get("/", (req, res) => {
+    res.send("API is running :)");
+})
+
+//get all users
+app.get('/users', async(req, res) => {
+    try {
+        const users = await User.find().select('-password');
+        res.json(users)
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+})
+
+//register user
+app.post('/users', async (req, res) => {
+    try {
+        const { username, email, firstName, lastName, password } = req.body;
+        const userExists = await User.findOne({ email });
+
+        if (userExists) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        const lastUser = await User.findOne().sort({ userId: -1 });
+        const newUserId = lastUser ? lastUser.userId + 1 : 1;
+
+        const user = await User.create({
+            userId: newUserId,
+            firstName: firstName,
+            lastName: lastName,
+            username: username,
+            email: email,
+            password: password
+        });
+
+        res.status(201).json({
+            message: 'User registered successfully',
+            user: {
+                userId: user.userId,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message});
+    }
+})
+
+//user login
+app.post('/users/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({email});
+        if (user == null) {
+            return res.status(400).send('Cannot find user')
+        }
+
+        const isMatch = await user.matchPassword(password);
+        if (isMatch) {
+            res.json({
+                message: 'Login successful',
+                user: {
+                    userId: user.userId,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    mealPlan: user.mealPlan,
+                    receivesNotifications: user.receivesNotifications,
+                    isActive: user.isActive
+
+                }
+            });
+        } else {
+            res.status(400).json({message: 'Invalid credentials'});
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
 });
 
-// GET route
-app.get("/posts", (req, res) => {
-  res.json(posts);
-});
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server on port ${PORT}`));
