@@ -1,10 +1,20 @@
+import mongoose from "mongoose";
 /*
-    This file contains the Post model for the database.
-    It defines the structure of the Post table and its associations with other tables.
-
-    BUILDING is a JavaScript equivalent to an enum that contains all the buildings on campus.
-    It is used to validate the location field in the Post model.
+    Post Schema
+    - postId: Unique identifier for the post
+    - type: Type of post (FreeFood or MealSwipe)
+    - title: Title of the post
+    - description: Description of the post
+    - location: Location details including building code, latitude, and longitude
+    - reporter: Reference to the User who created the post
+    - createdAt: Timestamp when the post was created
+    - expiresAt: Timestamp when the post expires
+    - isExpired: Boolean indicating if the post is expired
+    - isFlagged: Boolean indicating if the post has been flagged
+    - flagCount: Number of times the post has been flagged
 */
+
+// Building codes for locations on and around campus
 const BUILDING = Object.freeze({
     "Mather Memorial Building": "MMB",
     "Glennan Gymnasium": "GLY",
@@ -72,61 +82,31 @@ const BUILDING = Object.freeze({
     "The Cleveland Metroparks": "CMP",
 });
 
-module.exports = (sequelize, DataTypes, User) => {
-    const Post = sequelize.define('Post', {
-        title: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        description: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-        },
-        location: {
-            type: DataTypes.BUILDING,
-            allowNull: false,
-            validate: {
-                isIn: [Object.values(BUILDING)],
-            },
-        },
-        time: {
-            type: DataTypes.DATE,
-            allowNull: false,
-        },
-        experationTime: {
-            type: DataTypes.DATE,
-            allowNull: false,
-        },
-        reporter: {
-            type: User.get('accountId'),
-            allowNull: false,
-        },
-        isExpired: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false,
-        },
-        isFlagged: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false,
-        },
-        flagCount: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0,
-        },
-        postId: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-        },
-        repOrSwipe: {
-            //0 = food report, 1 = meal swipe
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-        },
-    });
-    
-    Post.associate = (models) => {
-        Post.belongsTo(models.User, { foreignKey: 'reporter', as: 'user' });
-    };
-    return Post;
-}
+const postSchema = new mongoose.Schema({
+  postId: { type: Number, unique: true, required: true },
+  type: {
+    type: String,
+    enum: ["FreeFood", "MealSwipe"],
+    required: true
+  },
+  title: { type: String, required: true },
+  description: { type: String },
+  location: {
+    enum: Object.values(BUILDING),
+    validate: {
+        isIn: (value) => Object.values(BUILDING).includes(value),
+        message: (props) => `${props.value} is not a valid building code`
+    },
+    required: true,
+    lat: { type: Number, required: true },
+    lng: { type: Number, required: true }
+  },
+  reporter: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  createdAt: { type: Date, default: Date.now },
+  expiresAt: { type: Date, required: true },
+  isExpired: { type: Boolean, default: false },
+  isFlagged: { type: Boolean, default: false },
+  flagCount: { type: Number, default: 0 },
+});
+
+export default mongoose.model("Post", postSchema);
