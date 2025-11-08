@@ -92,12 +92,11 @@ const postSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String },
   location: {
-    enum: Object.values(BUILDING),
-    validate: {
-        isIn: (value) => Object.values(BUILDING).includes(value),
-        message: (props) => `${props.value} is not a valid building code`
+    buildingCode: {
+      type: String,
+      enum: Object.values(BUILDING),
+      required: true
     },
-    required: true,
     lat: { type: Number, required: true },
     lng: { type: Number, required: true }
   },
