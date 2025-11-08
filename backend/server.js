@@ -1,103 +1,53 @@
+
 import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
 import dotenv from "dotenv";
-import connectDB from "./config/db.js";
-import User from "./models/User.js";
-//import bcrypt from 'bcrypt';
 
+// Import routes
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
+
+// Load environment variables
 dotenv.config();
-const app = express()
 
-app.use(express.json())
-connectDB();
+const app = express();
 
-const users = []
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-//Root route?
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
+
+// Health check route
 app.get("/", (req, res) => {
-    res.send("API is running :)");
-})
-
-//get all users
-app.get('/users', async(req, res) => {
-    try {
-        const users = await User.find().select('-password');
-        res.json(users)
-    }
-    catch (err) {
-        res.status(500).json({ message: err.message })
-    }
-})
-
-//register user
-app.post('/users', async (req, res) => {
-    try {
-        const { username, email, firstName, lastName, password } = req.body;
-        const userExists = await User.findOne({ email });
-
-        if (userExists) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
-
-        const lastUser = await User.findOne().sort({ userId: -1 });
-        const newUserId = lastUser ? lastUser.userId + 1 : 1;
-
-        const user = await User.create({
-            userId: newUserId,
-            firstName: firstName,
-            lastName: lastName,
-            username: username,
-            email: email,
-            password: password
-        });
-
-        res.status(201).json({
-            message: 'User registered successfully',
-            user: {
-                userId: user.userId,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                username: user.username,
-                email: user.email
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message});
-    }
-})
-
-//user login
-app.post('/users/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await User.findOne({email});
-        if (user == null) {
-            return res.status(400).send('Cannot find user')
-        }
-
-        const isMatch = await user.matchPassword(password);
-        if (isMatch) {
-            res.json({
-                message: 'Login successful',
-                user: {
-                    userId: user.userId,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email,
-                    mealPlan: user.mealPlan,
-                    receivesNotifications: user.receivesNotifications,
-                    isActive: user.isActive
-
-                }
-            });
-        } else {
-            res.status(400).json({message: 'Invalid credentials'});
-        }
-    } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
+  res.json({ message: "Case Eaters API is running" });
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Something went wrong!", error: err.message });
+});
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server on port ${PORT}`));
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
