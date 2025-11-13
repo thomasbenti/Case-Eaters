@@ -1,18 +1,30 @@
 /**
  * Functional Jest tests for the User model
- * Covers: UM-1 (valid user object), UM-2 (return info), UM-3 (password validation)
+ * Covers:
+ *  - UM-1: valid user object
+ *  - UM-1b: invalid email format
+ *  - UM-1c: missing required fields
+ *  - UM-2: user retrieval
+ *  - UM-3: password comparison
+ *  - UM-4: password required
+ *  - Duplicate email
+ *  - Password hashing
+ *  - Default fields
  */
+
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 
 describe("User Model Functional Tests", () => {
   beforeAll(async () => {
-    // Use local or in-memory MongoDB for testing
-    await mongoose.connect("mongodb+srv://tlb102_db_user:N03knbMPVXMbM28F@case-eaters-cluster.nmzvrlw.mongodb.net/?retryWrites=true&w=majority&appName=Case-Eaters-Cluster", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(
+      "mongodb+srv://tlb102_db_user:N03knbMPVXMbM28F@case-eaters-cluster.nmzvrlw.mongodb.net/test-db",
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
   });
 
   afterAll(async () => {
@@ -24,7 +36,9 @@ describe("User Model Functional Tests", () => {
     await User.deleteMany({});
   });
 
-  // ---------- UM-1: Determine a valid User object ----------
+  // -------------------------------------------------------------
+  // UM-1: Valid User Object
+  // -------------------------------------------------------------
   test("UM-1: should create a valid User object", async () => {
     const user = new User({
       userId: 101,
@@ -37,24 +51,56 @@ describe("User Model Functional Tests", () => {
     const savedUser = await user.save();
     expect(savedUser._id).toBeDefined();
     expect(savedUser.email).toBe("john@example.com");
-    expect(savedUser.password).not.toBe("password123"); // password hashed
+    expect(savedUser.password).not.toBe("password123");
   });
 
-  // ---------- UM-1 (negative variant): invalid email ----------
-  test("should reject invalid email format", async () => {
+  // -------------------------------------------------------------
+  // UM-1b: Invalid Email
+  // -------------------------------------------------------------
+  test("UM-1b: should reject invalid email format", async () => {
     const user = new User({
       userId: 102,
-      firstName: "Invalid",
+      firstName: "Bad",
       lastName: "Email",
-      email: "invalidEmail",
+      email: "not-an-email",
       password: "pass123",
     });
+
     await expect(user.save()).rejects.toThrow(/valid email address/);
   });
 
-  // ---------- UM-2: Return the info of the User ----------
+  // -------------------------------------------------------------
+  // UM-1c: Missing Required Fields
+  // -------------------------------------------------------------
+  test("UM-1c: should fail if required fields are missing", async () => {
+    const user = new User({
+      email: "missing@fields.com",
+      password: "pass123",
+    });
+
+    await expect(user.save()).rejects.toThrow();
+  });
+
+  // -------------------------------------------------------------
+  // UM-4: Password Required Validation
+  // -------------------------------------------------------------
+  test("UM-4: should require a password", async () => {
+    const user = new User({
+      userId: 200,
+      firstName: "No",
+      lastName: "Password",
+      email: "nopass@example.com",
+      // missing password
+    });
+
+    await expect(user.save()).rejects.toThrow(/password/);
+  });
+
+  // -------------------------------------------------------------
+  // UM-2: Retrieve User Info
+  // -------------------------------------------------------------
   test("UM-2: should retrieve stored user info", async () => {
-    const newUser = await new User({
+    await new User({
       userId: 103,
       firstName: "Alice",
       lastName: "Smith",
@@ -62,15 +108,17 @@ describe("User Model Functional Tests", () => {
       password: "mypassword",
     }).save();
 
-    const foundUser = await User.findOne({ email: "alice@example.com" });
-    expect(foundUser.firstName).toBe("Alice");
-    expect(foundUser.lastName).toBe("Smith");
-    expect(foundUser.email).toBe("alice@example.com");
-    expect(typeof foundUser.password).toBe("string");
-    expect(foundUser.password).not.toBe("mypassword");
+    const user = await User.findOne({ email: "alice@example.com" });
+
+    expect(user.firstName).toBe("Alice");
+    expect(user.lastName).toBe("Smith");
+    expect(user.email).toBe("alice@example.com");
+    expect(user.password).not.toBe("mypassword");
   });
 
-  // ---------- UM-3: Password comparison ----------
+  // -------------------------------------------------------------
+  // UM-3: Password Comparison
+  // -------------------------------------------------------------
   test("UM-3: should verify password using matchPassword()", async () => {
     const user = await new User({
       userId: 104,
@@ -87,7 +135,9 @@ describe("User Model Functional Tests", () => {
     expect(mismatch).toBe(false);
   });
 
-  // ---------- Duplicate email check ----------
+  // -------------------------------------------------------------
+  // Duplicate Email
+  // -------------------------------------------------------------
   test("should not allow duplicate email addresses", async () => {
     const data = {
       userId: 105,
@@ -96,13 +146,18 @@ describe("User Model Functional Tests", () => {
       email: "jane@example.com",
       password: "abc123",
     };
+
     await new User(data).save();
+
     await expect(new User({ ...data, userId: 106 }).save()).rejects.toThrow();
   });
 
-  // ---------- Password hashing ----------
+  // -------------------------------------------------------------
+  // Password Hashing Behavior
+  // -------------------------------------------------------------
   test("should hash password before saving", async () => {
     const plain = "rawPassword";
+
     const user = await new User({
       userId: 107,
       firstName: "Tom",
@@ -112,11 +167,15 @@ describe("User Model Functional Tests", () => {
     }).save();
 
     expect(user.password).not.toBe(plain);
+
     const verified = await bcrypt.compare(plain, user.password);
     expect(verified).toBe(true);
+    expect(user.password.startsWith("$2")).toBe(true);
   });
 
-  // ---------- Default field values ----------
+  // -------------------------------------------------------------
+  // Default Values
+  // -------------------------------------------------------------
   test("should apply default values for boolean fields", async () => {
     const user = await new User({
       userId: 108,
