@@ -19,9 +19,8 @@ import {
 
 import Post from "../models/Post.js";
 
-// --------------------------------------------------
+
 // Helper mock factories
-// --------------------------------------------------
 
 const mockSort = (result) => ({
   sort: jest.fn().mockResolvedValue(result),
@@ -64,9 +63,7 @@ describe("Post Controller Functional Tests", () => {
     jest.clearAllMocks();
   });
 
-  // =====================================================
   // PM-1: Create Post
-  // =====================================================
   describe("PM-1: Create Post", () => {
     test("should successfully create a valid post", async () => {
       req.body = {
@@ -132,9 +129,7 @@ describe("Post Controller Functional Tests", () => {
     });
   });
 
-  // =====================================================
   // Get All Posts
-  // =====================================================
   describe("Get All Posts", () => {
     test("should retrieve all posts", async () => {
       const mockPosts = [
@@ -164,9 +159,7 @@ describe("Post Controller Functional Tests", () => {
     });
   });
 
-  // =====================================================
   // Get Post By ID
-  // =====================================================
   describe("Get Post By ID", () => {
     test("should retrieve a post", async () => {
       req.params.id = "mockId";
@@ -196,9 +189,7 @@ describe("Post Controller Functional Tests", () => {
     });
   });
 
-  // =====================================================
   // Update Post
-  // =====================================================
   describe("Update Post", () => {
     test("should update post when user is reporter", async () => {
       req.params.id = "mockId";
@@ -257,9 +248,7 @@ describe("Post Controller Functional Tests", () => {
     });
   });
 
-  // =====================================================
   // PM-2 Delete Post
-  // =====================================================
   describe("Delete Post", () => {
     test("should delete when user is reporter", async () => {
       req.params.id = "mockId";
@@ -300,9 +289,7 @@ describe("Post Controller Functional Tests", () => {
     });
   });
 
-  // =====================================================
   // Flag Post
-  // =====================================================
   describe("Flag Post", () => {
     test("should increment flag", async () => {
       req.params.id = "mockId";
@@ -332,9 +319,7 @@ describe("Post Controller Functional Tests", () => {
     });
   });
 
-  // =====================================================
   // Expire Post
-  // =====================================================
   describe("Expire Post", () => {
     test("should expire post when reporter", async () => {
       req.params.id = "mockId";
@@ -374,9 +359,7 @@ describe("Post Controller Functional Tests", () => {
     });
   });
 
-  // =====================================================
   // Get Posts By User
-  // =====================================================
   describe("Get Posts By User", () => {
     test("should retrieve posts", async () => {
       req.params.userId = "mockUser";
@@ -395,9 +378,7 @@ describe("Post Controller Functional Tests", () => {
     });
   });
 
-  // =====================================================
   // Error Handling
-  // =====================================================
   describe("Error Handling", () => {
     test("getAllPosts DB error", async () => {
       Post.find = jest.fn().mockReturnValue({

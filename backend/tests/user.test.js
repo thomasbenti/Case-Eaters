@@ -36,9 +36,7 @@ describe("User Model Functional Tests", () => {
     await User.deleteMany({});
   });
 
-  // -------------------------------------------------------------
   // UM-1: Valid User Object
-  // -------------------------------------------------------------
   test("UM-1: should create a valid User object", async () => {
     const user = new User({
       userId: 101,
@@ -54,9 +52,7 @@ describe("User Model Functional Tests", () => {
     expect(savedUser.password).not.toBe("password123");
   });
 
-  // -------------------------------------------------------------
   // UM-1b: Invalid Email
-  // -------------------------------------------------------------
   test("UM-1b: should reject invalid email format", async () => {
     const user = new User({
       userId: 102,
@@ -69,9 +65,7 @@ describe("User Model Functional Tests", () => {
     await expect(user.save()).rejects.toThrow(/valid email address/);
   });
 
-  // -------------------------------------------------------------
   // UM-1c: Missing Required Fields
-  // -------------------------------------------------------------
   test("UM-1c: should fail if required fields are missing", async () => {
     const user = new User({
       email: "missing@fields.com",
@@ -81,9 +75,7 @@ describe("User Model Functional Tests", () => {
     await expect(user.save()).rejects.toThrow();
   });
 
-  // -------------------------------------------------------------
   // UM-4: Password Required Validation
-  // -------------------------------------------------------------
   test("UM-4: should require a password", async () => {
     const user = new User({
       userId: 200,
@@ -96,9 +88,7 @@ describe("User Model Functional Tests", () => {
     await expect(user.save()).rejects.toThrow(/password/);
   });
 
-  // -------------------------------------------------------------
   // UM-2: Retrieve User Info
-  // -------------------------------------------------------------
   test("UM-2: should retrieve stored user info", async () => {
     await new User({
       userId: 103,
@@ -116,9 +106,7 @@ describe("User Model Functional Tests", () => {
     expect(user.password).not.toBe("mypassword");
   });
 
-  // -------------------------------------------------------------
   // UM-3: Password Comparison
-  // -------------------------------------------------------------
   test("UM-3: should verify password using matchPassword()", async () => {
     const user = await new User({
       userId: 104,
@@ -135,9 +123,7 @@ describe("User Model Functional Tests", () => {
     expect(mismatch).toBe(false);
   });
 
-  // -------------------------------------------------------------
   // Duplicate Email
-  // -------------------------------------------------------------
   test("should not allow duplicate email addresses", async () => {
     const data = {
       userId: 105,
@@ -152,9 +138,7 @@ describe("User Model Functional Tests", () => {
     await expect(new User({ ...data, userId: 106 }).save()).rejects.toThrow();
   });
 
-  // -------------------------------------------------------------
   // Password Hashing Behavior
-  // -------------------------------------------------------------
   test("should hash password before saving", async () => {
     const plain = "rawPassword";
 
@@ -173,9 +157,7 @@ describe("User Model Functional Tests", () => {
     expect(user.password.startsWith("$2")).toBe(true);
   });
 
-  // -------------------------------------------------------------
   // Default Values
-  // -------------------------------------------------------------
   test("should apply default values for boolean fields", async () => {
     const user = await new User({
       userId: 108,

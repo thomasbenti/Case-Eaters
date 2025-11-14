@@ -36,9 +36,7 @@ describe("Server Functional Tests", () => {
     await mongoose.connection.close();
   });
 
-  // ==========================
   // AUTH ROUTES
-  // ==========================
   describe("Auth Routes", () => {
     test("POST /api/auth/register creates a new user", async () => {
       const res = await request(app).post("/api/auth/register").send({
@@ -75,9 +73,7 @@ describe("Server Functional Tests", () => {
     });
   });
 
-  // ==========================
   // USER ROUTES
-  // ==========================
   describe("User Routes", () => {
     test("GET /api/users returns all users (protected)", async () => {
       const res = await request(app)
@@ -99,9 +95,7 @@ describe("Server Functional Tests", () => {
     });
   });
 
-  // ==========================
   // POST ROUTES
-  // ==========================
   describe("Post Routes", () => {
     test("POST /api/posts creates a new post", async () => {
       const res = await request(app)
@@ -114,7 +108,7 @@ describe("Server Functional Tests", () => {
           description: "Come get slices!",
           reporter: user._id,
           location: {
-            buildingCode: "KSL",    // VALID
+            buildingCode: "KSL",
             lat: 41.507,
             lng: -81.609,
           },
@@ -133,7 +127,7 @@ describe("Server Functional Tests", () => {
         description: "Morning coffee in Nord Hall",
         reporter: user._id,
         location: {
-          buildingCode: "NOD",  // VALID (Nord Hall)
+          buildingCode: "NOD",
           lat: 41.504,
           lng: -81.609,
         },
@@ -155,7 +149,7 @@ describe("Server Functional Tests", () => {
         description: "Offering a swipe in Tink",
         reporter: user._id,
         location: {
-          buildingCode: "TVC", // VALID (Tink)
+          buildingCode: "TVC",
           lat: 41.505,
           lng: -81.607,
         },

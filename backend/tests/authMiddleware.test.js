@@ -28,9 +28,7 @@ describe("Auth Middleware Functional Tests", () => {
     }));
   };
 
-  // ---------------------------------------------------------
   // FT-M1 — No Token Provided
-  // ---------------------------------------------------------
   test("FT-M1: should return 401 when no token is provided", async () => {
     req.headers.authorization = undefined;
 
@@ -41,9 +39,7 @@ describe("Auth Middleware Functional Tests", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  // ---------------------------------------------------------
   // FT-M2 — Invalid Token
-  // ---------------------------------------------------------
   test("FT-M2: should return 401 for invalid token", async () => {
     req.headers.authorization = "Bearer invalidtoken";
 
@@ -59,9 +55,7 @@ describe("Auth Middleware Functional Tests", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  // ---------------------------------------------------------
   // FT-M3 — Valid Token but User Inactive
-  // ---------------------------------------------------------
   test("FT-M3: should return 401 if user is inactive", async () => {
     req.headers.authorization = "Bearer validtoken";
 
@@ -82,9 +76,7 @@ describe("Auth Middleware Functional Tests", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  // ---------------------------------------------------------
   // FT-M4 — Valid Token + Active User → next()
-  // ---------------------------------------------------------
   test("FT-M4: should attach user to req and call next() when token is valid", async () => {
     req.headers.authorization = "Bearer goodtoken";
 
@@ -105,9 +97,7 @@ describe("Auth Middleware Functional Tests", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  // ---------------------------------------------------------
   // FT-M5 — Admin Middleware Success
-  // ---------------------------------------------------------
   test("FT-M5: admin middleware should call next() when user is admin", () => {
     req.user = { isAdmin: true };
 
@@ -116,9 +106,7 @@ describe("Auth Middleware Functional Tests", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  // ---------------------------------------------------------
   // FT-M6 — Admin Middleware Failure
-  // ---------------------------------------------------------
   test("FT-M6: admin middleware should return 403 when user is NOT admin", () => {
     req.user = { isAdmin: false };
 

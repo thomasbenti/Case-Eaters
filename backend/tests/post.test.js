@@ -21,9 +21,7 @@ describe("Post Model Functional Tests", () => {
     await mongoose.connection.close();
   });
 
-  // ------------------------------------------------
   // PM-1: Valid Post Creation
-  // ------------------------------------------------
   test("PM-1: should create a valid Post object successfully", async () => {
     const validPost = new Post({
       postId: 1,
@@ -47,9 +45,7 @@ describe("Post Model Functional Tests", () => {
     expect(savedPost.flagCount).toBe(0);
   });
 
-  // ------------------------------------------------
   // PM-2: Required field validation
-  // ------------------------------------------------
   test("PM-2: should fail when required fields are missing", async () => {
     const invalidPost = new Post({
       title: "Missing Fields",
@@ -70,9 +66,7 @@ describe("Post Model Functional Tests", () => {
     expect(err.errors["location.buildingCode"]).toBeDefined();
   });
 
-  // ------------------------------------------------
   // PM-3: Invalid buildingCode
-  // ------------------------------------------------
   test("PM-3: should reject invalid building code", async () => {
     const invalidLocationPost = new Post({
       postId: 2,
@@ -90,9 +84,7 @@ describe("Post Model Functional Tests", () => {
     await expect(invalidLocationPost.save()).rejects.toThrow();
   });
 
-  // ------------------------------------------------
   // PM-4: Retrieval of existing post
-  // ------------------------------------------------
   test("PM-4: should correctly return post info", async () => {
     const post = await Post.findOne({ title: "Pizza at Nord Hall" });
 
@@ -102,9 +94,7 @@ describe("Post Model Functional Tests", () => {
     expect(typeof post.createdAt).toBe("object");
   });
 
-  // ------------------------------------------------
   // PM-5: Expiration logic
-  // ------------------------------------------------
   test("PM-5: should mark post as expired when expiresAt has passed", async () => {
     const expiredPost = new Post({
       postId: 3,
