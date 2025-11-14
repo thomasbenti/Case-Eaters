@@ -82,6 +82,14 @@ const BUILDING = Object.freeze({
     "The Cleveland Metroparks": "CMP",
 });
 
+const BUILDING_COORDS = Object.freeze({
+  MMB: { lat: 41.5041, lng: -81.6092 },
+  NOD: { lat: 41.5045, lng: -81.6086 },
+  THW: { lat: 41.5072, lng: -81.6063 },
+  KSL: { lat: 41.5079, lng: -81.6090 },
+  //etc
+});
+
 const postSchema = new mongoose.Schema({
   postId: { type: Number, unique: true, required: true },
   type: {
