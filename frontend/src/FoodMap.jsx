@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import "./FoodMap.css";
 import axios from "axios";
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
+import PostForm from "./PostForm";
 
 const center = { lat: 41.5045, lng: -81.6086 }; // CWRU campus center
 
@@ -57,6 +60,14 @@ class FoodMap extends Component {
         [name]: value
       }
     });
+  };
+  handleSave = (taskData) => {
+    
+    setPosts((prev) => [...prev, taskData]);
+      toastr.success('Post added successfully!', 'Success', {
+        positionClass: 'toast-bottom-right',
+      });
+    setShowForm(false);
   };
 
   handleMapClick = (e) => {
@@ -123,69 +134,57 @@ class FoodMap extends Component {
     return (
       <div className="food-map-page">
 
-        {/* add post form */}
-        {showAddForm && (
-          <div
-            className="add-post-form"
-            style={{
-              position: "absolute",
-              top: "20%",
-              left: "50%",
-              transform: "translateX(-50%)",
-              background: "white",
-              padding: "20px",
-              borderRadius: "8px",
-              boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
-              zIndex: 999
-            }}
-          >
-            <h3 style={{color: "black"}}>Create New Post</h3>
-
-            <input
-              type="text"
-              name="title"
-              placeholder="Post Title"
-              value={newPost.title}
-              onChange={this.handleInput}
-              style={{ width: "100%", marginBottom: "10px" }}
-            />
-
-            <textarea
-              name="description"
-              placeholder="Description"
-              value={newPost.description}
-              onChange={this.handleInput}
-              style={{ width: "100%", marginBottom: "10px", height: "80px" }}
-            />
-
-            <input
-              type="text"
-              name="buildingCode"
-              placeholder="Location"
-              value={newPost.buildingCode}
-              onChange={this.handleInput}
-              style={{ width: "100%", marginBottom: "10px" }}
-            />
-
-            <button onClick={this.submitPost}>Submit</button>
-            <button onClick={this.toggleAddForm} style={{ marginLeft: "10px" }}>
-              Cancel
-            </button>
-          </div>
-        )}
-
-        <button
-          className="add-post-btn"
-          onClick={this.toggleAddForm}
-          style={{ margin: "10px", padding: "10px 16px" }}
-        >
-          Add Post
-        </button>
 
         {/* Map Section */}
         {/* Post Button */}
         
         <div className="map-container" style={{ position: "relative"}}>
+        <button
+          className="add-post-btn"
+          onClick={this.toggleAddForm}
+          style={{
+            position: "absolute",
+            top: "15px",
+            left: "15px",
+            zIndex: 900,
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            padding: "10px 16px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)"
+          }}
+        >
+          + Add Post
+        </button>
+        {showAddForm && (
+  <div
+    className="postform-overlay"
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(0,0,0,0.4)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 1050
+    }}
+  >
+    <PostForm
+      newPost={newPost}
+      onChange={this.handleInput}
+      onSubmit={() => this.submitPost()}
+      onCancel={() => this.setState({ showAddForm: false })}
+    />
+  </div>
+)}
+
+   
           <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
             <GoogleMap
               onClick={this.handleMapClick}
