@@ -4,25 +4,31 @@ import axios from "axios";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
 
-function LoginModal() {
+function RegisterModal() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
+    mealPlan: false,
   });
 
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
   const handleSubmit = async () => {
     let validationErrors = {};
+    if (!formData.firstName) validationErrors.firstName = "First name is required";
+    if (!formData.lastName) validationErrors.lastName = "Last name is required";
     if (!formData.email) validationErrors.email = "Email is required";
     if (!formData.password) validationErrors.password = "Password is required";
 
@@ -30,17 +36,17 @@ function LoginModal() {
     if (Object.keys(validationErrors).length > 0) return;
 
     try {
-      const res = await axios.post("/api/auth/login", formData);
+      const res = await axios.post("/api/auth/register", formData);
       localStorage.setItem("token", res.data.token);
-      toastr.success("Logged in successfully!", "Success");
-      navigate("/map");
+      toastr.success("Registered successfully!", "Success");
+      navigate("/map"); 
     } catch (err) {
-      toastr.error(err.response?.data?.message || "Login failed", "Error");
+      toastr.error(err.response?.data?.message || "Registration failed", "Error");
     }
   };
 
   const handleCancel = () => {
-    navigate("/");
+    navigate("/"); 
   };
 
   return (
@@ -61,7 +67,7 @@ function LoginModal() {
       <div
         className="modal-content border rounded shadow-lg"
         style={{
-          width: "350px",
+          width: "400px",
           maxWidth: "90%",
           backgroundColor: "white",
           borderRadius: "18px",
@@ -85,11 +91,33 @@ function LoginModal() {
               gap: "8px",
             }}
           >
-            Login Form
+            <i className="fa fa-user-plus"></i> Register Form
           </h5>
         </div>
 
         <div className="form-group mt-3 w-100">
+          {/* FIRST NAME */}
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            className={`form-control mb-3 ${errors.firstName ? "border border-danger" : ""}`}
+            value={formData.firstName}
+            onChange={handleChange}
+          />
+          {errors.firstName && <small className="text-danger d-block mb-2">{errors.firstName}</small>}
+
+          {/* LAST NAME */}
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            className={`form-control mb-3 ${errors.lastName ? "border border-danger" : ""}`}
+            value={formData.lastName}
+            onChange={handleChange}
+          />
+          {errors.lastName && <small className="text-danger d-block mb-2">{errors.lastName}</small>}
+
           {/* EMAIL */}
           <input
             type="email"
@@ -112,6 +140,21 @@ function LoginModal() {
           />
           {errors.password && <small className="text-danger d-block mb-2">{errors.password}</small>}
 
+          {/* MEAL PLAN */}
+          <div className="form-check mb-3">
+            <input
+              type="checkbox"
+              name="mealPlan"
+              className="form-check-input"
+              id="mealPlan"
+              checked={formData.mealPlan}
+              onChange={handleChange}
+            />
+            <label className="form-check-label" htmlFor="mealPlan">
+              I have a meal plan
+            </label>
+          </div>
+
           {/* BUTTONS */}
           <div className="d-flex flex-column gap-2 mt-3 w-100">
             <button
@@ -119,7 +162,7 @@ function LoginModal() {
               onClick={handleSubmit}
               style={{ fontWeight: "bold" }}
             >
-              LOGIN
+              REGISTER
             </button>
             <button
               className="btn btn-secondary w-100"
@@ -135,4 +178,4 @@ function LoginModal() {
   );
 }
 
-export default LoginModal;
+export default RegisterModal;
