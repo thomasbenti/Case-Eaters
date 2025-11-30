@@ -5,9 +5,8 @@
     "bcryptjs": "^3.0.2",
     "bootstrap": "^5.3.8",
     "express": "^5.1.0",
-    "toastr": "^2.1.4"
+    "toastr": "^2.1.4",
     "dotenv": "^17.2.3",
-    "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
