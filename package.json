@@ -6,6 +6,9 @@
     "bootstrap": "^5.3.8",
     "express": "^5.1.0",
     "toastr": "^2.1.4"
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.5",
@@ -21,7 +24,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test:coverage",
-    "test:win": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --coverage",
+    "test:win": "cross-env NODE_ENV=test DOTENV_CONFIG_PATH=./backend/.env.test NODE_OPTIONS=--experimental-vm-modules node -r dotenv/config ./node_modules/jest/bin/jest.js --detectOpenHandles --coverage",
     "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "repository": {

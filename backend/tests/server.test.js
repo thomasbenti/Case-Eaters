@@ -1,18 +1,33 @@
-/**
- * Functional tests for Server/App routes (Case Eaters)
- * Covers: SA-1, SA-2, SA-3 from the Functional Test Plan
- */
 import request from "supertest";
 import mongoose from "mongoose";
-import app from "../app.js";
-import User from "../models/User.js";
+import jwt from "jsonwebtoken";
+import app, { ready } from "../server.js";
 
-describe("Server & App Functional Tests", () => {
+import User from "../models/User.js";
+import Post from "../models/Post.js";
+
+describe("Server Functional Tests", () => {
+  let token;
+  let user;
+
   beforeAll(async () => {
-    process.env.NODE_ENV = "test";
-    await mongoose.connect("mongodb+srv://tlb102_db_user:N03knbMPVXMbM28F@case-eaters-cluster.nmzvrlw.mongodb.net/?retryWrites=true&w=majority&appName=Case-Eaters-Cluster", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+    await ready;
+  });
+
+  beforeEach(async () => {
+    await User.deleteMany({});
+    await Post.deleteMany({});
+
+    user = await User.create({
+      userId: 1,
+      firstName: "Functional",
+      lastName: "Tester",
+      email: "functional@test.com",
+      password: "password123",
+    });
+
+    token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
     });
   });
 
@@ -21,95 +36,130 @@ describe("Server & App Functional Tests", () => {
     await mongoose.connection.close();
   });
 
-  afterEach(async () => {
-    await User.deleteMany({});
-  });
+  // AUTH ROUTES
+  describe("Auth Routes", () => {
+    test("POST /api/auth/register creates a new user", async () => {
+      const res = await request(app).post("/api/auth/register").send({
+        userId: 2,
+        firstName: "New",
+        lastName: "User",
+        email: "newuser@example.com",
+        password: "password123",
+      });
 
-  // ---------- SA-1: Server Startup ----------
-  test("SA-1: should respond to root route", async () => {
-    const res = await request(app).get("/");
-    expect(res.statusCode).toBe(200);
-    expect(res.text).toBe("API is running :)");
-  });
-
-  // ---------- SA-2: Add a user to database ----------
-  test("SA-2: should register a new user successfully", async () => {
-    const newUser = {
-      firstName: "John",
-      lastName: "Doe",
-      username: "johndoe",
-      email: "john@example.com",
-      password: "password123",
-    };
-
-    const res = await request(app).post("/users").send(newUser);
-
-    expect(res.statusCode).toBe(201);
-    expect(res.body.message).toBe("User registered successfully");
-    expect(res.body.user.email).toBe("john@example.com");
-
-    // Verify database
-    const saved = await User.findOne({ email: "john@example.com" });
-    expect(saved).not.toBeNull();
-    expect(saved.firstName).toBe("John");
-  });
-
-  test("should not register user with existing email", async () => {
-    const data = {
-      firstName: "Jane",
-      lastName: "Smith",
-      username: "janesmith",
-      email: "jane@example.com",
-      password: "password123",
-    };
-    await new User({ ...data, userId: 1 }).save();
-
-    const res = await request(app).post("/users").send(data);
-    expect(res.statusCode).toBe(400);
-    expect(res.body.message).toBe("User already exists");
-  });
-
-  // ---------- SA-3: Get all users ----------
-  test("SA-3: should return all users without password field", async () => {
-    await new User({
-      userId: 10,
-      firstName: "Alice",
-      lastName: "Brown",
-      email: "alice@example.com",
-      password: "mypassword",
-    }).save();
-
-    const res = await request(app).get("/users");
-    expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBe(1);
-    expect(res.body[0]).not.toHaveProperty("password");
-    expect(res.body[0].email).toBe("alice@example.com");
-  });
-
-  // ---------- User login (derived from SRS login spec) ----------
-  test("should login successfully with valid credentials", async () => {
-    await request(app).post("/users").send({
-      firstName: "Sam",
-      lastName: "Lee",
-      username: "samlee",
-      email: "sam@example.com",
-      password: "mypassword",
+      expect(res.status).toBe(201);
+      expect(res.body.email).toBe("newuser@example.com");
+      expect(res.body.token).toBeDefined();
     });
 
-    const res = await request(app)
-      .post("/users/login")
-      .send({ email: "sam@example.com", password: "mypassword" });
+    test("POST /api/auth/login logs user in", async () => {
+      const res = await request(app).post("/api/auth/login").send({
+        email: "functional@test.com",
+        password: "password123",
+      });
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body.message).toBe("Login successful");
-    expect(res.body.user.email).toBe("sam@example.com");
+      expect(res.status).toBe(200);
+      expect(res.body.email).toBe("functional@test.com");
+      expect(res.body.token).toBeDefined();
+    });
+
+    test("GET /api/auth/profile returns authenticated user profile", async () => {
+      const res = await request(app)
+        .get("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.email).toBe("functional@test.com");
+    });
   });
 
-  test("should reject invalid login credentials", async () => {
-    const res = await request(app)
-      .post("/users/login")
-      .send({ email: "fake@example.com", password: "wrong" });
-    expect(res.statusCode).toBe(400);
+  // USER ROUTES
+  describe("User Routes", () => {
+    test("GET /api/users returns all users (protected)", async () => {
+      const res = await request(app)
+        .get("/api/users")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBeGreaterThan(0);
+    });
+
+    test("GET /api/users/:id returns a specific user", async () => {
+      const res = await request(app)
+        .get(`/api/users/${user._id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.email).toBe("functional@test.com");
+    });
+  });
+
+  // POST ROUTES
+  describe("Post Routes", () => {
+    test("POST /api/posts creates a new post", async () => {
+      const res = await request(app)
+        .post("/api/posts")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          postId: 1,
+          type: "FreeFood",
+          title: "Free Pizza in KSL",
+          description: "Come get slices!",
+          reporter: user._id,
+          location: {
+            buildingCode: "KSL",
+            lat: 41.507,
+            lng: -81.609,
+          },
+          expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.title).toBe("Free Pizza in KSL");
+    });
+
+    test("GET /api/posts returns list of posts", async () => {
+      await Post.create({
+        postId: 2,
+        type: "FreeFood",
+        title: "Free Coffee",
+        description: "Morning coffee in Nord Hall",
+        reporter: user._id,
+        location: {
+          buildingCode: "NOD",
+          lat: 41.504,
+          lng: -81.609,
+        },
+        expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+      });
+
+      const res = await request(app).get("/api/posts");
+
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBeGreaterThan(0);
+    });
+
+    test("GET /api/posts/:id returns a single post", async () => {
+      const created = await Post.create({
+        postId: 3,
+        type: "MealSwipe",
+        title: "Meal Swipe Available",
+        description: "Offering a swipe in Tink",
+        reporter: user._id,
+        location: {
+          buildingCode: "TVC",
+          lat: 41.505,
+          lng: -81.607,
+        },
+        expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+      });
+
+      const res = await request(app).get(`/api/posts/${created._id}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.title).toBe("Meal Swipe Available");
+    });
   });
 });
