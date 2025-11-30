@@ -191,6 +191,7 @@ class FoodMap extends Component {
               mapContainerStyle={{ width: "100%", height: "100%" }}
               center={center}
               zoom={15}
+              options={{ mapTypeControl: false }}
             >
               {allPosts.map(post =>
                 post.location && post.location.lat != null && post.location.lng != null && (
