@@ -7,6 +7,17 @@ export const createPost = async (req, res) => {
   try {
     const { type, title, description, location, expiresAt } = req.body;
 
+
+    const buildingKey = Object.entries(BUILDING).find(
+      ([fullName, acronym]) =>
+        fullName === location.buildingCode || acronym === location.buildingCode
+    )?.[1];
+
+    if(!buildingKey || !BUILDING_COORDS[buildingKey]){
+      return res.status(400).json({ message: "Invalid building code" });
+    }
+
+    const coords = BUILDING_COORDS[buildingKey];
     // Generate unique postId
     const lastPost = await Post.findOne().sort({ postId: -1 });
     const postId = lastPost ? lastPost.postId + 1 : 1;
@@ -16,7 +27,11 @@ export const createPost = async (req, res) => {
       type,
       title,
       description,
-      location,
+      location: {
+        buildingCode: buildingKey,
+        lat: coords.lat,
+        lng: coords.lng
+      },
       reporter: req.user._id,
       expiresAt,
     });
