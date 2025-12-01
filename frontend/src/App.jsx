@@ -12,14 +12,13 @@ class App extends Component {
     return (
       <Router>
         <div className="Navbar">
-          <Link to="/">Home</Link> | <Link to="/map">Food Map</Link> | <Link to="/Swipes">Swipes</Link>
+          <Link to="/">Home</Link> | <Link to="/map">Food Map</Link>
         </div>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/Register" element={<Register />} />
           <Route path="/map" element={<FoodMap />} />
-          <Route path="/Swipes" element={<Swipes />} />
         </Routes>
       </Router>
     );
