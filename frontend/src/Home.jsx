@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./Home.css";
 import campusImage from "/CWRU-Campus.png";
+import { Link } from "react-router-dom";
 
 const LoginCard = [
   {
@@ -31,7 +32,8 @@ class Home extends Component {
             <div key={index} className="login-card">
               <p>{item.title}</p>
               <p>{item.description}</p>
-              <a href={item.link}>Go</a>
+              <Link to={item.link}>Go</Link>
+
             </div>
           ))}
         </div>
