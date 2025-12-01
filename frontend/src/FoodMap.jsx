@@ -8,6 +8,8 @@ import PostForm from "./PostForm";
 
 const center = { lat: 41.5045, lng: -81.6086 };
 
+
+
 const dummyReports = [
   {
     id: 1,
