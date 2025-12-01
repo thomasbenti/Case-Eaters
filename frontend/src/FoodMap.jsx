@@ -2,11 +2,40 @@ import React, { Component } from "react";
 import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import "./FoodMap.css";
 import axios from "axios";
-import toastr from 'toastr';
-import 'toastr/build/toastr.min.css';
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
 import PostForm from "./PostForm";
 
-const center = { lat: 41.5045, lng: -81.6086 }; // CWRU campus center
+const center = { lat: 41.5045, lng: -81.6086 };
+
+const dummyReports = [
+  {
+    id: 1,
+    type: "Pizza",
+    location: "KSL Library",
+    description: "Free leftover pizza",
+    time: "2:00 PM",
+    position: { lat: 41.507, lng: -81.609 },
+  },
+  {
+    id: 2,
+    type: "Sandwiches",
+    location: "Tinkham Veale",
+    description: "Club event sandwiches",
+    time: "12:30 PM",
+    position: { lat: 41.5052, lng: -81.6075 },
+  },
+  {
+    id: 3,
+    type: "Den Swipe",
+    location: "Den",
+    description: "The Den swipe",
+    time: "3:00 PM",
+    position: {
+      lat: 41.512024350428426, lng: -81.60603047665283
+     },
+  },
+];
 
 class FoodMap extends Component {
   constructor(props) {
@@ -21,15 +50,15 @@ class FoodMap extends Component {
         buildingCode: "",
         lat: null,
         lng: null,
-        expiresAt: ""
-      }
+        expiresAt: "",
+      },
     };
   }
 
   async componentDidMount() {
     this.loadPosts();
   }
-  
+
   loadPosts = async () => {
     try {
       const res = await axios.get("/api/posts");
@@ -47,7 +76,6 @@ class FoodMap extends Component {
     this.setState({ selected: null });
   };
 
- 
   toggleAddForm = () => {
     this.setState({ showAddForm: !this.state.showAddForm });
   };
@@ -57,17 +85,9 @@ class FoodMap extends Component {
     this.setState({
       newPost: {
         ...this.state.newPost,
-        [name]: value
-      }
+        [name]: value,
+      },
     });
-  };
-  handleSave = (taskData) => {
-    
-    setPosts((prev) => [...prev, taskData]);
-      toastr.success('Post added successfully!', 'Success', {
-        positionClass: 'toast-bottom-right',
-      });
-    setShowForm(false);
   };
 
   handleMapClick = (e) => {
@@ -76,115 +96,115 @@ class FoodMap extends Component {
       newPost: {
         ...this.state.newPost,
         lat: latLng.lat(),
-        lng: latLng.lng()
-      }
+        lng: latLng.lng(),
+      },
     });
   };
 
-  async submitPost() {
+  submitPost = async () => {
     try {
-      const { newPost } = this.state;
-      const coords = BUILDING_COORDS[newPost.buildingCode.toUpperCase()];
-      if (!coords) {
-        alert("Invalid building code, not a campus building.");
+      const { newPost, allPosts } = this.state;
+
+      if (!newPost.title || !newPost.buildingCode || !newPost.expiresAt || !newPost.lat || !newPost.lng) {
+        alert("Please fill all fields and select a location on the map.");
         return;
       }
-      if (!newPost.title || !newPost.buildingCode || !newPost.expiresAt) {
-        alert("Please fill in all fields and select a location on the map.");
-        return;
-      }
-  
+
       const res = await axios.post(
         "/api/posts",
         {
-          type: "FreeFood",
           title: newPost.title,
           description: newPost.description,
           location: {
             buildingCode: newPost.buildingCode.toUpperCase(),
-            lat: coords.lat,
-            lng: coords.lng
+            lat: newPost.lat,
+            lng: newPost.lng,
           },
-          expiresAt: newPost.expiresAt
+          expiresAt: newPost.expiresAt,
         },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
-  
+
       this.setState({
+        allPosts: [res.data, ...allPosts],
+        showAddForm: false,
         newPost: {
           title: "",
           description: "",
           buildingCode: "",
           lat: null,
           lng: null,
-          expiresAt: ""
+          expiresAt: "",
         },
-        showAddForm: false,
-        allPosts: [res.data, ...this.state.allPosts]
+      });
+
+      toastr.success("Post added successfully!", "Success", {
+        positionClass: "toast-bottom-right",
       });
     } catch (err) {
       console.error("Failed to submit post:", err);
+      toastr.error("Failed to submit post", "Error", {
+        positionClass: "toast-bottom-right",
+      });
     }
-  }
-  
+  };
 
   render() {
-    const { selected, showAddForm, allPosts, newPost} = this.state;
+    const { selected, showAddForm, allPosts, newPost } = this.state;
+
+    const combinedPosts = [...dummyReports, ...allPosts];
 
     return (
       <div className="food-map-page">
+        <div className="map-container" style={{ position: "relative", height: "500px" }}>
+          <button
+            className="add-post-btn"
+            onClick={this.toggleAddForm}
+            style={{
+              position: "absolute",
+              top: "15px",
+              left: "15px",
+              zIndex: 900,
+              backgroundColor: "#007bff",
+              color: "white",
+              border: "none",
+              padding: "10px 16px",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontWeight: "bold",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+            }}
+          >
+            + Add Post
+          </button>
 
+          {showAddForm && (
+            <div
+              className="postform-overlay"
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                backgroundColor: "rgba(0,0,0,0.4)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1050,
+              }}
+            >
+              <PostForm
+                post={newPost}
+                onSave={this.submitPost}
+                onCancel={() => this.setState({ showAddForm: false })}
+                onChange={this.handleInput}
+              />
+            </div>
+          )}
 
-        {/* Map Section */}
-        {/* Post Button */}
-        
-        <div className="map-container" style={{ position: "relative"}}>
-        <button
-          className="add-post-btn"
-          onClick={this.toggleAddForm}
-          style={{
-            position: "absolute",
-            top: "15px",
-            left: "15px",
-            zIndex: 900,
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            padding: "10px 16px",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontWeight: "bold",
-            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)"
-          }}
-        >
-          + Add Post
-        </button>
-        {showAddForm && (
-  <div
-    className="postform-overlay"
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100vw",
-      height: "100vh",
-      backgroundColor: "rgba(0,0,0,0.4)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 1050
-    }}
-  >
-    <PostForm
-      newPost={newPost}
-      onChange={this.handleInput}
-      onSubmit={() => this.submitPost()}
-      onCancel={() => this.setState({ showAddForm: false })}
-    />
-  </div>
-)}
-
-   
           <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
             <GoogleMap
               onClick={this.handleMapClick}
@@ -193,26 +213,27 @@ class FoodMap extends Component {
               zoom={15}
               options={{ mapTypeControl: false }}
             >
-              {allPosts.map(post =>
-                post.location && post.location.lat != null && post.location.lng != null && (
-                  <Marker
-                    key={post._id}
-                    position={{ lat: post.location.lat, lng: post.location.lng }}
-                    onClick={() => this.selectReport(post)}
-                  />
-                )
-              )}
+              {combinedPosts.map((post) => {
+                const position = post.position || (post.location ? { lat: post.location.lat, lng: post.location.lng } : null);
+                if (!position) return null;
+                return (
+                  <Marker key={post.id || post._id} position={position} onClick={() => this.selectReport(post)} />
+                );
+              })}
 
               {selected && (
                 <InfoWindow
-                  position={{ lat: selected.location.lat, lng: selected.location.lng }}
+                  position={
+                    selected.position || (selected.location ? { lat: selected.location.lat, lng: selected.location.lng } : center)
+                  }
                   onCloseClick={this.closeInfo}
                 >
                   <div>
-                    <h3>{selected.title}</h3>
+                    <h3>{selected.type || selected.title}</h3>
                     <p>{selected.description}</p>
-                    <p><strong>{selected.location.buildingCode}</strong></p>
-                    <small>Expires: {new Date(selected.expiresAt).toLocaleString()}</small>
+                    <p><strong>{selected.location?.buildingCode || selected.location}</strong></p>
+                    {selected.expiresAt && <small>Expires: {new Date(selected.expiresAt).toLocaleString()}</small>}
+                    {selected.time && <small>{selected.time}</small>}
                   </div>
                 </InfoWindow>
               )}
@@ -220,15 +241,14 @@ class FoodMap extends Component {
           </LoadScript>
         </div>
 
-        {/* List Section */}
         <div className="food-list-container">
-          <h3>Available Food</h3>
           <ul className="food-list">
-            {allPosts.map(post => (
-              <li key={post._id} onClick={() => this.selectReport(post)}>
-                <strong>{post.title}</strong> — {post.location.buildingCode}
+            {combinedPosts.map((post) => (
+              <li key={post.id || post._id} onClick={() => this.selectReport(post)}>
+                <strong>{post.type || post.title}</strong> — {post.location?.buildingCode || post.location}
                 <p>{post.description}</p>
-                <span>Expires: {new Date(post.expiresAt).toLocaleString()}</span>
+                {post.expiresAt && <span>Expires: {new Date(post.expiresAt).toLocaleString()}</span>}
+                {post.time && <span>{post.time}</span>}
               </li>
             ))}
           </ul>
