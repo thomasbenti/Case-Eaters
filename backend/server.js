@@ -3,13 +3,16 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import User from "./models/User.js";
 import mongoose from "mongoose";
-//import bcrypt from 'bcrypt';
+import authRoutes from "./routes/authRoutes.js"
+import cors from "cors";
 
 dotenv.config();
 const app = express()
 
+app.use(cors());
 app.use(express.json())
 connectDB();
+app.use("/api/auth", authRoutes);
 
 const users = []
 

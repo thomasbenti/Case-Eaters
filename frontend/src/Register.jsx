@@ -36,12 +36,13 @@ function RegisterModal() {
     if (Object.keys(validationErrors).length > 0) return;
 
     try {
-      const res = await axios.post("/api/auth/register", formData);
+      const res = await axios.post("http://localhost:5000/api/auth/register", formData);
       localStorage.setItem("token", res.data.token);
       toastr.success("Registered successfully!", "Success");
       navigate("/map"); 
     } catch (err) {
       toastr.error(err.response?.data?.message || "Registration failed", "Error");
+      console.log(err);
     }
   };
 
