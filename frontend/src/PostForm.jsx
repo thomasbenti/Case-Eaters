@@ -70,7 +70,7 @@ const BUILDING = Object.freeze({
 });
 
 
-export default function PostForm({ post, onSave, onCancel }) {
+export default function PostForm({ post, onSubmit, onCancel }) {
   const [postData, setPostData] = useState({
     title: "",
     description: "",
@@ -105,8 +105,8 @@ export default function PostForm({ post, onSave, onCancel }) {
       setErrors(fieldErrors);
       return;
     }
-
-    onSave(postData);
+    
+    //onSubmit(postData);
   };
 
   return (
@@ -205,7 +205,7 @@ export default function PostForm({ post, onSave, onCancel }) {
           <div className="mt-4 d-flex gap-4 justify-content-start">
             <button
               className="btn btn-primary d-flex align-items-center shadow"
-              onClick={handleSubmit}
+              onClick={onSubmit}
             >
               
             + ADD

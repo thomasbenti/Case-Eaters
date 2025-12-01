@@ -61,8 +61,8 @@ class FoodMap extends Component {
       }
     });
   };
+
   handleSave = (taskData) => {
-    
     setPosts((prev) => [...prev, taskData]);
       toastr.success('Post added successfully!', 'Success', {
         positionClass: 'toast-bottom-right',
@@ -95,7 +95,7 @@ class FoodMap extends Component {
       }
   
       const res = await axios.post(
-        "/api/posts",
+        "http://localhost:5000/api/posts",
         {
           type: "FreeFood",
           title: newPost.title,
