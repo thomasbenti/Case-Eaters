@@ -113,8 +113,18 @@ class FoodMap extends Component {
     try {
       const { newPost, allPosts } = this.state;
 
-      if (!newPost.title || !newPost.buildingCode || !newPost.expiresAt || !newPost.lat || !newPost.lng) {
+      newPost.expiresAt = "11:59 PM"
+
+      if (!newPost.title) {
         alert("Please fill all fields and select a location on the map.");
+        return;
+      }
+      if(!newPost.expiresAt){
+        alert("please fill in an expiration time")
+        return;
+      }
+      if (!newPost.buildingCode || !newPost.lat || !newPost.lng){
+        alert("Please fill in the coordinates for the location on the map.");
         return;
       }
 
@@ -206,7 +216,7 @@ class FoodMap extends Component {
             >
               <PostForm
                 post={newPost}
-                onSave={this.submitPost}
+                onSubmit={this.submitPost}
                 onCancel={() => this.setState({ showAddForm: false })}
                 onChange={this.handleInput}
               />

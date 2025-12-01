@@ -70,23 +70,23 @@ const BUILDING = Object.freeze({
 });
 
 
-export default function PostForm({ post, onSubmit, onCancel }) {
-  const [postData, setPostData] = useState({
-    title: "",
-    description: "",
-  });
+export default function PostForm({ post, onSubmit, onCancel, onChange }) {
+  // const [postData, setPostData] = useState({
+  //   title: "",
+  //   description: "",
+  // });
 
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (post) setPostData(post);
-  }, [post]);
+  // useEffect(() => {
+  //   if (post) setPostData(post);
+  // }, [post]);
 
-  const handleInput = (e) => {
-    const { name, value } = e.target;
-    setPostData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
+  // const handleInput = (e) => {
+  //   const { name, value } = e.target;
+  //   setPostData((prev) => ({ ...prev, [name]: value }));
+  //   setErrors((prev) => ({ ...prev, [name]: "" }));
+  // };
 
   const handleSubmit = () => {
     let fieldErrors = {};
@@ -105,8 +105,7 @@ export default function PostForm({ post, onSubmit, onCancel }) {
       setErrors(fieldErrors);
       return;
     }
-    
-    //onSubmit(postData);
+
   };
 
   return (
@@ -153,8 +152,8 @@ export default function PostForm({ post, onSubmit, onCancel }) {
               className={`form-control mb-2 ${
                 errors.title ? "border border-danger" : ""
               }`}
-              value={postData.title}
-              onChange={handleInput}
+              value={post.title}
+              onChange={onChange}
             />
               <span className="error-space">
                 {errors.title && (
@@ -171,8 +170,8 @@ export default function PostForm({ post, onSubmit, onCancel }) {
                 name="description"
                 placeholder="Description"
                 className={`form-control mb-2 ${errors.description ? "border border-danger" : ""}`}
-                value={postData.description}
-                onChange={handleInput}
+                value={post.description}
+                onChange={onChange}
                 rows={4}
               />
               <span className="error-space">
@@ -187,8 +186,8 @@ export default function PostForm({ post, onSubmit, onCancel }) {
             <select
               name="location"
               className={`form-control mb-2 ${errors.location ? "border border-danger" : ""}`}
-              value={postData.location}
-              onChange={handleInput}
+              value={post.location}
+              onChange={onChange}
             >
               <option value="">Select a building</option>
               {Object.entries(BUILDING).map(([name, code]) => (
