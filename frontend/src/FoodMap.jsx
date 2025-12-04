@@ -159,12 +159,6 @@ class FoodMap extends Component {
             lat: newPost.lat,
             lng: newPost.lng,
           },
-          // position: {lat: newPost.lat, lng: newPost.lng},
-          // location: {
-          //   buildingCode: newPost.buildingCode.toUpperCase(),
-          //   lat: newPost.lat,
-          //   lng: newPost.lng,
-          // },
           expiresAt: newPost.expiresAt,
         },
         {
