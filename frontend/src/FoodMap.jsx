@@ -5,6 +5,7 @@ import axios from "axios";
 import toastr from "toastr";
 import "toastr/build/toastr.min.css";
 import PostForm from "./PostForm";
+import { BUILDING } from "./buildings";
 
 const center = { lat: 41.5045, lng: -81.6086 };
 
@@ -84,6 +85,21 @@ class FoodMap extends Component {
 
   handleInput = (e) => {
     const { name, value } = e.target;
+    if (name === "buildingCode") {
+      const entry = Object.values(BUILDING).find(b => b.id === value)
+
+      if (entry) {
+        this.setState({
+          newPost: {
+            ...this.state.newPost,
+            buildingCode: value,
+            lat: entry.lat,
+            lng: entry.lng
+          }
+        });
+        return;
+      }
+    }
     this.setState({
       newPost: {
         ...this.state.newPost,
@@ -125,7 +141,10 @@ class FoodMap extends Component {
         alert("please fill in an expiration time")
         return;
       }
-      if (!newPost.buildingCode || !newPost.lat || !newPost.lng){
+      if (!newPost.buildingCode){
+        alert("please fill iin the building code");
+        return;
+      } if (!newPost.lat || !newPost.lng){
         alert("Please fill in the coordinates for the location on the map.");
         return;
       }
@@ -136,10 +155,16 @@ class FoodMap extends Component {
           title: newPost.title,
           description: newPost.description,
           location: {
-            buildingCode: newPost.buildingCode.toUpperCase(),
+            buildingCode: newPost.buildingCode,
             lat: newPost.lat,
             lng: newPost.lng,
           },
+          // position: {lat: newPost.lat, lng: newPost.lng},
+          // location: {
+          //   buildingCode: newPost.buildingCode.toUpperCase(),
+          //   lat: newPost.lat,
+          //   lng: newPost.lng,
+          // },
           expiresAt: newPost.expiresAt,
         },
         {
