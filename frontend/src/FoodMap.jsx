@@ -251,7 +251,7 @@ class FoodMap extends Component {
               mapContainerStyle={{ width: "100%", height: "100%" }}
               center={center}
               zoom={15}
-              options={{ mapTypeControl: false }}
+              options={{ mapTypeControl: false, clickableIcons: false }}
             >
               {combinedPosts.map((post) => {
                 const position = post.position || (post.location ? { lat: post.location.lat, lng: post.location.lng } : null);
@@ -261,22 +261,50 @@ class FoodMap extends Component {
                 );
               })}
 
-              {selected && (
-                <InfoWindow
-                  position={
-                    selected.position || (selected.location ? { lat: selected.location.lat, lng: selected.location.lng } : center)
-                  }
-                  onCloseClick={this.closeInfo}
+            {selected && (
+              <InfoWindow
+                position={
+                  selected.position || (selected.location ? { lat: selected.location.lat, lng: selected.location.lng } : center)
+                }
+                onCloseClick={this.closeInfo}
+              >
+              <div style={{ position: "relative", minWidth: "220px", paddingRight: "24px"}}>
+                <button
+                  onClick={this.closeInfo}
+                  style={{
+                    position: "absolute",
+                    top: "0px",
+                    right: "0px",
+                    border: "none",
+                    backgroundColor: "#ff4d4f",
+                    color: "white",
+                    fontSize: "24px",
+                    fontWeight: "bold",
+                    width: "30px",
+                    height: "30px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000,  
+                  }}
+                  title="Close"
                 >
-                  <div>
-                    <h3>{selected.type || selected.title}</h3>
-                    <p>{selected.description}</p>
-                    <p><strong>{selected.location?.buildingCode || selected.location}</strong></p>
+                  X
+                </button>
+
+                <div style={{ paddingTop: "0px" }}>
+                  <h3>{selected.type || selected.title}</h3>
+                  <p>{selected.description}</p>
+                  <p><strong>{selected.location?.buildingCode || selected.location}</strong></p>
                     {selected.expiresAt && <small>Expires: {new Date(selected.expiresAt).toLocaleString()}</small>}
                     {selected.time && <small>{selected.time}</small>}
-                  </div>
-                </InfoWindow>
-              )}
+                </div>
+               </div>
+              </InfoWindow>
+            )}
+
+
             </GoogleMap>
           </LoadScript>
         </div>
