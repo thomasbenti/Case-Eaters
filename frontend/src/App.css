@@ -24,6 +24,6 @@
 
 body {
   margin: 0;
-  padding-top: 60px; /* prevent content from being hidden behind navbar */
+  padding-top: 40px; /* prevent content from being hidden behind navbar */
   font-family: Arial, sans-serif;
 }

@@ -4,21 +4,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  min-height: calc(100vh - 64px);
+  justify-content: center;
+  height: 100vh;
   background-color: #1e1e1e;
   color: #fff;
-  padding: 60px 5%;
+  padding: 50px 5%;
   font-family: "Inter", sans-serif;
   text-align: center;
+  width: 100vw;
+  box-sizing: border-box;
 }
 
 /* Hero image section */
 .hero-image {
   width: 100%;
   max-width: 1000px;
-  height: 350px;
-  border-radius: 12px;
+  height: 200px;
+  border-radius: 10px;
   overflow: hidden;
   margin-bottom: 40px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
