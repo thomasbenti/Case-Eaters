@@ -7,6 +7,7 @@ import "toastr/build/toastr.min.css";
 import PostForm from "./PostForm";
 import { BUILDING } from "./buildings";
 
+
 const center = { lat: 41.5045, lng: -81.6086 };
 
 
@@ -48,6 +49,7 @@ class FoodMap extends Component {
       selected: null,
       showAddForm: false,
       allPosts: [],
+      flaggedPosts: {},
       newPost: {
         title: "",
         description: "",
@@ -196,6 +198,46 @@ class FoodMap extends Component {
     }
   };
 
+  handleFlag = async (post) => {
+    try {
+      const postId = post._id;
+  
+      // Hide flag button once user clicks it
+      this.setState(prev => ({
+        flaggedPosts: { ...prev.flaggedPosts, [postId]: true }
+      }));
+  
+      const res = await axios.put(
+        `/api/posts/${postId}/flag`,
+        {},
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+  
+      if (res.data.removed) {
+        // remove the post from map page
+        this.setState(prev => ({
+          allPosts: prev.allPosts.filter(p => p._id !== postId),
+          selected: null
+        }));
+        toastr.info("This post has been removed due to multiple flags.", "Removed");
+      } else {
+        // update the post in the db
+        this.setState(prev => ({
+          allPosts: prev.allPosts.map(p =>
+            p._id === postId ? { ...p, flagCount: res.data.flagCount } : p
+          )
+        }));
+        toastr.success("You flagged this post.", "Flagged");
+      }
+    } catch (err) {
+      console.error(err);
+      toastr.error("Failed to flag post", "Error");
+    }
+  };
+  
+  
+  
+
   render() {
     const { mapKey } = this.state;
     const { selected, showAddForm, allPosts, newPost } = this.state;
@@ -299,6 +341,8 @@ class FoodMap extends Component {
                 >
                   X
                 </button>
+            
+
 
                 <div style={{ paddingTop: "0px" }}>
                   <h3>{selected.type || selected.title}</h3>
@@ -307,6 +351,27 @@ class FoodMap extends Component {
                     {selected.expiresAt && <small>Expires: {new Date(selected.expiresAt).toLocaleString()}</small>}
                     {selected.time && <small>{selected.time}</small>}
                 </div>
+
+                {!this.state.flaggedPosts[selected._id] && (
+                  <button
+                    onClick={() => this.handleFlag(selected)}
+                    style={{
+                      position: "absolute",
+                      bottom: "5px",
+                     right: "5px",
+                      backgroundColor: "#ffa500",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "6px 12px",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      zIndex: 900,
+                    }}
+                  >
+                    flag
+                  </button>
+                )}
                </div>
               </InfoWindow>
             )}

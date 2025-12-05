@@ -187,17 +187,22 @@ export const deletePost = async (req, res) => {
 export const flagPost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
+    if (!post) return res.status(404).json({ message: "Post not found" });
 
     post.flagCount += 1;
     post.isFlagged = true;
 
-    await post.save();
-    res.json({ message: "Post flagged", flagCount: post.flagCount });
+    let removed = false;
+    if (post.flagCount > 3) {
+      await post.deleteOne();
+      removed = true;
+    } else {
+      await post.save();
+    }
+
+    res.json({ message: "Post flagged", flagCount: post.flagCount, removed });
   } catch (error) {
+    console.error("Flag error:", error);
     res.status(500).json({ message: error.message });
   }
 };

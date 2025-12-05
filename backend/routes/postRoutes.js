@@ -1,4 +1,5 @@
 import express from "express";
+import { flagPost } from "../controllers/postController.js";
 import {
   createPost,
   getAllPosts,
