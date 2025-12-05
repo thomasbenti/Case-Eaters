@@ -44,6 +44,7 @@ class FoodMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      mapKey: Date.now(),
       selected: null,
       showAddForm: false,
       allPosts: [],
@@ -57,6 +58,10 @@ class FoodMap extends Component {
       },
     };
   }
+
+  reloadMap = () => {
+    this.setState({ mapKey: Date.now() }); 
+  };
 
   async componentDidMount() {
     this.loadPosts();
@@ -192,6 +197,7 @@ class FoodMap extends Component {
   };
 
   render() {
+    const { mapKey } = this.state;
     const { selected, showAddForm, allPosts, newPost } = this.state;
 
     const combinedPosts = [...dummyReports, ...allPosts];
@@ -247,6 +253,7 @@ class FoodMap extends Component {
 
           <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
             <GoogleMap
+              key={mapKey} 
               onClick={this.handleMapClick}
               mapContainerStyle={{ width: "100%", height: "100%" }}
               center={center}

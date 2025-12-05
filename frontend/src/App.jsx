@@ -12,7 +12,7 @@ class App extends Component {
     return (
       <Router>
         <div className="Navbar">
-          <Link to="/">Home</Link> | <Link to="/map">Food Map</Link>
+          <Link to="/">Home</Link> | <Link to="/map" onClick={() => foodMapRef.current.reloadMap()}>Food Map</Link>
         </div>
         <Routes>
           <Route path="/" element={<Home />} />
