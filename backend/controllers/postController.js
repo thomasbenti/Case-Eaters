@@ -1,26 +1,65 @@
 import Post from "../models/Post.js";
+import { BUILDING } from "../buildings.js";
+
+// Convert "11:59 PM" to a Date object for today
+function parseTimeStringToToday(timeStr) {
+  const now = new Date();
+  const [time, meridiem] = timeStr.split(" "); // ["11:59", "PM"]
+  const [hoursStr, minutesStr] = time.split(":");
+  let hours = parseInt(hoursStr);
+  const minutes = parseInt(minutesStr);
+
+  // Convert to 24-hour time
+  if (meridiem === "PM" && hours !== 12) hours += 12;
+  if (meridiem === "AM" && hours === 12) hours = 0;
+
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+}
+
+
 
 // @desc    Create a new post
 // @route   POST /api/posts
 // @access  Private
 export const createPost = async (req, res) => {
   try {
+    console.log("FULL REQUEST BODY:", JSON.stringify(req.body, null, 2));
+    
+    // console.log("testing!!!!");
+    // console.log("BUILDING", BUILDING);
+    //console.log("BUILDING_COORDS", BUILDING_COORDS);
+    //console.log("incoming code:", req.body.location.buildingCode);
+
     const { type, title, description, location, expiresAt } = req.body;
+    //console.log("location: ", location);
 
-
+    const expireDate = parseTimeStringToToday(expiresAt);
     const buildingKey = Object.entries(BUILDING).find(
-      ([fullName, acronym]) =>
-        fullName === location.buildingCode || acronym === location.buildingCode
-    )?.[1];
-
-    if(!buildingKey || !BUILDING_COORDS[buildingKey]){
+      ([fullName, data]) =>
+        data.id === location.buildingCode
+    );
+    console.log("Building key: ", buildingKey);
+    if(!buildingKey){
       return res.status(400).json({ message: "Invalid building code" });
     }
 
-    const coords = BUILDING_COORDS[buildingKey];
+    const lat = buildingKey[1].lat;
+    const lng = buildingKey[1].lng;
+    console.log("lat: ", lat, " long: ", lng);
     // Generate unique postId
     const lastPost = await Post.findOne().sort({ postId: -1 });
     const postId = lastPost ? lastPost.postId + 1 : 1;
+    
+    console.log("post information: ");
+    console.log(postId);
+    console.log(type);
+    console.log(title);
+    console.log(description);
+    console.log(buildingKey[1].id);
+    console.log(lat);
+    console.log(lng);
+    console.log(req.user._id);
+    console.log(expiresAt);
 
     const post = await Post.create({
       postId,
@@ -28,13 +67,16 @@ export const createPost = async (req, res) => {
       title,
       description,
       location: {
-        buildingCode: buildingKey,
-        lat: coords.lat,
-        lng: coords.lng
+        buildingCode: buildingKey[1].id,
+        lat: lat,
+        lng: lng
       },
       reporter: req.user._id,
-      expiresAt,
+      expiresAt: expireDate,
     });
+    console.log("marker");
+
+    
 
     const populatedPost = await Post.findById(post._id).populate("reporter", "firstName lastName email");
     res.status(201).json(populatedPost);

@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { BUILDING } from "../buildings.js";
+
 /*
     Post Schema
     - postId: Unique identifier for the post
@@ -15,7 +17,7 @@ import mongoose from "mongoose";
 */
 
 // Building codes for locations on and around campus
-const BUILDING = Object.freeze({
+/*const BUILDING = Object.freeze({
     "Mather Memorial Building": "MMB",
     "Glennan Gymnasium": "GLY",
     "Adelbert Hall": "ADH",
@@ -88,7 +90,7 @@ const BUILDING_COORDS = Object.freeze({
   THW: { lat: 41.5072, lng: -81.6063 },
   KSL: { lat: 41.5079, lng: -81.6090 },
   //etc
-});
+});*/
 
 const postSchema = new mongoose.Schema({
   postId: { type: Number, unique: true, required: true },
@@ -102,7 +104,7 @@ const postSchema = new mongoose.Schema({
   location: {
     buildingCode: {
       type: String,
-      enum: Object.values(BUILDING),
+      enum: Object.values(BUILDING).map(b => b.id),
       required: true
     },
     lat: { type: Number, required: true },

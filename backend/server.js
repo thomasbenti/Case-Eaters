@@ -4,6 +4,8 @@ import connectDB from "./config/db.js";
 import User from "./models/User.js";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js"
+import postRoutes from "./routes/postRoutes.js";
+
 import cors from "cors";
 
 dotenv.config();
@@ -13,6 +15,8 @@ app.use(cors());
 app.use(express.json())
 connectDB();
 app.use("/api/auth", authRoutes);
+app.use("/api/posts", postRoutes);
+
 
 const users = []
 

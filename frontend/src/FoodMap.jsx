@@ -152,6 +152,7 @@ class FoodMap extends Component {
       const res = await axios.post(
         "http://localhost:5000/api/posts",
         {
+          type: "FreeFood",
           title: newPost.title,
           description: newPost.description,
           location: {
