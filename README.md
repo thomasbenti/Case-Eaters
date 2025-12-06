@@ -7,7 +7,7 @@ This web app is used to report and locate free food around the cwru campus.
 Features and functionality information can be found in the user manual
 
 
-## INSTALATION
+## INSTALLATION
 Install all dependencies in both the front and backend and run the front and back end:
 
 cd backend 
