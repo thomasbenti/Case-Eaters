@@ -20,5 +20,8 @@ npm run dev
 
 Enter the local host path into the browser.
 
+## NOTES
+Bugs and ommissions can be found in the file bugs-ommission.md
+
 
 
