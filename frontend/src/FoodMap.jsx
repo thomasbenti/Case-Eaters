@@ -14,31 +14,49 @@ const center = { lat: 41.5045, lng: -81.6086 };
 const dummyReports = [
   {
     id: 1,
-    type: "Pizza",
-    location: "KSL Library",
+    type: "FreeFood",
+    title: "Pizza",
+    location: {
+      buildingCode: "ADH",
+      lat: 41.5050,
+      lng: -81.6083
+    },
     description: "Free leftover pizza",
-    time: "2:00 PM",
-    position: { lat: 41.507, lng: -81.609 },
+    time: "2:00 PM"
   },
   {
     id: 2,
-    type: "Sandwiches",
-    location: "Tinkham Veale",
+    type: "FreeFood",
+    title: "Sandwiches",
+    location: {
+      buildingCode: "AML",
+      lat: 41.5060,
+      lng: -81.608
+    },
     description: "Club event sandwiches",
     time: "12:30 PM",
-    position: { lat: 41.5052, lng: -81.6075 },
   },
   {
     id: 3,
-    type: "Den Swipe",
-    location: "Den",
-    description: "The Den swipe",
+    type: "MealSwipe",
+    title: "Fribley Swipe",
+    location: {
+      buildingCode: "FRC",
+      lat: 41.50128097018468, 
+      lng: -81.60269321354278
+    },
+    description: "Guest Swipe at Fribley",
     time: "3:00 PM",
-    position: {
-      lat: 41.512024350428426, lng: -81.60603047665283
-     },
   },
 ];
+
+const getBuildingName = (id) => {
+  for (const [name, info] of Object.entries(BUILDING)) {
+    if (info.id === id) return name;
+  }
+  return id; // fallback
+};
+
 
 class FoodMap extends Component {
   constructor(props) {
@@ -269,9 +287,11 @@ class FoodMap extends Component {
                   onCloseClick={this.closeInfo}
                 >
                   <div>
-                    <h3>{selected.type || selected.title}</h3>
+                    {/*<h3>{selected.type || selected.title}</h3>*/}
+                    <h3>{selected.title}</h3>
                     <p>{selected.description}</p>
-                    <p><strong>{selected.location?.buildingCode || selected.location}</strong></p>
+                    {/*<p><strong>{selected.location?.buildingCode || selected.location}</strong></p>*/}
+                    <p><strong>{getBuildingName(selected.location?.buildingCode)}</strong></p>
                     {selected.expiresAt && <small>Expires: {new Date(selected.expiresAt).toLocaleString()}</small>}
                     {selected.time && <small>{selected.time}</small>}
                   </div>
@@ -285,7 +305,7 @@ class FoodMap extends Component {
           <ul className="food-list">
             {combinedPosts.map((post) => (
               <li key={post.id || post._id} onClick={() => this.selectReport(post)}>
-                <strong>{post.type || post.title}</strong> — {post.location?.buildingCode || post.location}
+                <strong>{post.title}</strong> — {getBuildingName(post.location?.buildingCode)}
                 <p>{post.description}</p>
                 {post.expiresAt && <span>Expires: {new Date(post.expiresAt).toLocaleString()}</span>}
                 {post.time && <span>{post.time}</span>}
