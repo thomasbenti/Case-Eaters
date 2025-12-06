@@ -57,11 +57,15 @@ const getBuildingName = (id) => {
   return id; // fallback
 };
 
+const reloadMap = () => {
+  this.setState({ mapKey: Date.now() }); 
+};
 
 class FoodMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      mapKey: Date.now(),
       selected: null,
       showAddForm: false,
       allPosts: [],
@@ -210,6 +214,7 @@ class FoodMap extends Component {
   };
 
   render() {
+    const { mapKey } = this.state;
     const { selected, showAddForm, allPosts, newPost } = this.state;
 
     const combinedPosts = [...dummyReports, ...allPosts];
@@ -265,6 +270,7 @@ class FoodMap extends Component {
 
           <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
             <GoogleMap
+              key={mapKey}
               onClick={this.handleMapClick}
               mapContainerStyle={{ width: "100%", height: "100%" }}
               center={center}
@@ -280,23 +286,46 @@ class FoodMap extends Component {
               })}
 
               {selected && (
-                <InfoWindow
-                  position={
-                    selected.position || (selected.location ? { lat: selected.location.lat, lng: selected.location.lng } : center)
-                  }
-                  onCloseClick={this.closeInfo}
+              <InfoWindow
+                position={
+                  selected.position || (selected.location ? { lat: selected.location.lat, lng: selected.location.lng } : center)
+                }
+                onCloseClick={this.closeInfo}
+              >
+              <div style={{ position: "relative", minWidth: "220px", paddingRight: "24px"}}>
+                <button
+                  onClick={this.closeInfo}
+                  style={{
+                    position: "absolute",
+                    top: "0px",
+                    right: "0px",
+                    border: "none",
+                    backgroundColor: "#ff4d4f",
+                    color: "white",
+                    fontSize: "24px",
+                    fontWeight: "bold",
+                    width: "30px",
+                    height: "30px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000,  
+                  }}
+                  title="Close"
                 >
-                  <div>
-                    {/*<h3>{selected.type || selected.title}</h3>*/}
-                    <h3>{selected.title}</h3>
-                    <p>{selected.description}</p>
-                    {/*<p><strong>{selected.location?.buildingCode || selected.location}</strong></p>*/}
-                    <p><strong>{getBuildingName(selected.location?.buildingCode)}</strong></p>
+                  X
+                </button>
+                <div style={{ paddingTop: "0px" }}>
+                  <h3>{selected.type || selected.title}</h3>
+                  <p>{selected.description}</p>
+                  <p><strong>{selected.location?.buildingCode || selected.location}</strong></p>
                     {selected.expiresAt && <small>Expires: {new Date(selected.expiresAt).toLocaleString()}</small>}
                     {selected.time && <small>{selected.time}</small>}
-                  </div>
-                </InfoWindow>
-              )}
+                </div>
+               </div>
+              </InfoWindow>
+            )}
             </GoogleMap>
           </LoadScript>
         </div>

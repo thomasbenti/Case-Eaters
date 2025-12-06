@@ -1,9 +1,24 @@
-# SOFTWARE-ENGINEERING-PROJECT
+# CASE EATERS
 
-## DESCRIPTIOIN
+## DESCRIPTION
+This web app is used to report and locate free food around the cwru campus.
 
 ## FEAURES
+Features and functionality information can be found in the user manual
+
 
 ## INSTALATION
+Install all dependencies in both the front and backend and run the front and back end:
 
-'''bash
+cd backend 
+npm install
+npm run devStart
+
+cd frontend
+npm install
+npm run dev
+
+Enter the local host path into the browser.
+
+
+
