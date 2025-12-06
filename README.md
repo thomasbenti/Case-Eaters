@@ -3,7 +3,7 @@
 ## DESCRIPTION
 This web app is used to report and locate free food around the cwru campus.
 
-## FEAURES
+## FEATURES
 Features and functionality information can be found in the user manual
 
 
